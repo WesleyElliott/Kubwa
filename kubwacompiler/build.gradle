@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+ext {
+    // Where you will see your artifact in Bintray's web interface
+    // The "bintrayName" should match the name of the Bintray repro.
+    bintrayRepo = 'maven'
+    bintrayName = 'rating-bar'
+
+    // Maven metadata
+    publishedGroupId = 'com.brianattwell.rating_bar'
+    libraryName = 'RatingBar'
+    // Save yourself a head ache, and set this equal to the name of the Android Studio library
+    // module. The artifact name needs to match the name of the library.
+    artifact = 'ratingbar'
+
+    libraryDescription = 'A custom RatingBar view that measures its indeterminate drawable, in order to avoid the RatingBar "bleeding problem"'
+    libraryVersion = '0.3.1'
+
+    developerId = 'attwellbrian'
+    developerName = 'Brian Attwell'
+    developerEmail = 'brian@brianattwell.com'
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    compile 'com.squareup:javapoet:1.7.0'
+    compile project(':kubwaannotations')
+}
