@@ -5,6 +5,7 @@ import android.databinding.BaseObservable;
 import android.util.Log;
 import android.view.View;
 
+import com.wesleyelliott.kubwa.R;
 import com.wesleyjasonelliott.kubwa.annotation.Email;
 import com.wesleyjasonelliott.kubwa.annotation.Password;
 
