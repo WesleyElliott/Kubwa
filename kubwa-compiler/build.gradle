@@ -7,21 +7,21 @@ ext {
     // Where you will see your artifact in Bintray's web interface
     // The "bintrayName" should match the name of the Bintray repro.
     bintrayRepo = 'maven'
-    bintrayName = 'rating-bar'
+    bintrayName = 'kubwa'
 
     // Maven metadata
-    publishedGroupId = 'com.brianattwell.rating_bar'
-    libraryName = 'RatingBar'
+    publishedGroupId = 'com.wesleyjasonelliott.kubwa'
+    libraryName = 'Kubwa'
     // Save yourself a head ache, and set this equal to the name of the Android Studio library
     // module. The artifact name needs to match the name of the library.
-    artifact = 'ratingbar'
+    artifact = 'kubwa-compiler'
 
-    libraryDescription = 'A custom RatingBar view that measures its indeterminate drawable, in order to avoid the RatingBar "bleeding problem"'
-    libraryVersion = '0.3.1'
+    libraryDescription = 'An Annotation based validation library for use with Android\'s DataBinding library in an MVVM architecture.'
+    libraryVersion = '0.0.1'
 
-    developerId = 'attwellbrian'
-    developerName = 'Brian Attwell'
-    developerEmail = 'brian@brianattwell.com'
+    developerId = 'wesleyjasonelliott'
+    developerName = 'Wesley Elliott'
+    developerEmail = 'wesleyjasonelliott@gmail.com'
 }
 
 dependencies {
@@ -30,3 +30,6 @@ dependencies {
     compile 'com.squareup:javapoet:1.7.0'
     compile project(':kubwaannotations')
 }
+
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'

@@ -38,5 +38,5 @@ dependencies {
     androidTestCompile 'com.android.support:support-annotations:24.1.1'
 
     compile project(':kubwaannotations')
-    apt project(':kubwacompiler')
+    apt project(':kubwa-compiler')
 }
