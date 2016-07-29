@@ -1,1 +1,1 @@
-include ':app', ':kubwa-compiler', ':kubwaannotations'
+include ':app', ':kubwa-compiler', ':kubwa-annotations'

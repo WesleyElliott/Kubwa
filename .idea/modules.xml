@@ -4,8 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Kubwa.iml" filepath="$PROJECT_DIR$/Kubwa.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kubwa-annotations/kubwa-annotations.iml" filepath="$PROJECT_DIR$/kubwa-annotations/kubwa-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/kubwa-compiler/kubwa-compiler.iml" filepath="$PROJECT_DIR$/kubwa-compiler/kubwa-compiler.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kubwaannotations/kubwaannotations.iml" filepath="$PROJECT_DIR$/kubwaannotations/kubwaannotations.iml" />
     </modules>
   </component>
 </project>

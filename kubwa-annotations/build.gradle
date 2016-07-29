@@ -1,36 +1,35 @@
 apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
-
-repositories {
-    maven {
-        url  "http://dl.bintray.com/wesleyjasonelliott/maven"
+def logger = new com.android.build.gradle.internal.LoggerWrapper(project.logger)
+def sdkHandler = new com.android.build.gradle.internal.SdkHandler(project, logger)
+for (File file : sdkHandler.sdkLoader.repositories) {
+    repositories.maven {
+        url = file.toURI()
     }
 }
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.auto.service:auto-service:1.0-rc2'
-    compile 'com.squareup:javapoet:1.7.0'
-    compile 'com.wesleyelliott:kubwa-annotations:0.0.1'
+    compile 'com.google.android:android:2.1.2'
 }
 
 ext {
     bintrayRepo = 'maven'
-    bintrayName = 'kubwa-compiler'
+    bintrayName = 'kubwa-annotations'
 
     publishedGroupId = 'com.wesleyelliott'
-    libraryName = 'KubwaCompiler'
-    artifact = 'kubwa-compiler'
+    libraryName = 'KubwaAnnotations'
+    artifact = 'kubwa-annotations'
 
     libraryDescription = 'An Annotation based validation library for use with Android\'s DataBinding library in an MVVM architecture.'
 
     siteUrl = 'https://github.com/WesleyElliott/Kubwa'
     gitUrl = 'https://github.com/WesleyElliott/Kubwa.git'
 
-    libraryVersion = '0.0.2'
+    libraryVersion = '0.0.1'
 
     developerId = 'WesleyElliott'
     developerName = 'Wesley Elliott'
