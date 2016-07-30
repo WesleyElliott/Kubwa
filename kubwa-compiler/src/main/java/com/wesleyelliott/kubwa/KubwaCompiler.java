@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
+import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
@@ -14,6 +15,7 @@ import com.wesleyelliott.kubwa.annotation.ValidateUsing;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +111,13 @@ public class KubwaCompiler extends AbstractProcessor {
 
                         if (getSupportedAnnotations().contains(supportedAnnotation)) {
                             // Single Annotation
-                            fieldRules = parseSingle(typeElement, supportedAnnotation);
+                            if (supportedAnnotation.getSimpleName().equals(Password.class.getSimpleName())) {
+                                System.out.println("Password!");
+                                fieldRules.add(parsePassword(typeElement, supportedAnnotation));
+                            } else {
+                                fieldRules.add(parseSingle(typeElement, supportedAnnotation));
+                            }
+
                         } else if (getSupportedAnnotationsList().contains(supportedAnnotation)) {
                             // List of Annotations
                             fieldRules = parseList(typeElement, supportedAnnotation);
@@ -135,8 +143,17 @@ public class KubwaCompiler extends AbstractProcessor {
         return annotatedClasses;
     }
 
-    private<T extends Annotation> List<FieldRule> parseSingle(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        List<FieldRule> fieldRules = new ArrayList<>();
+    private<T extends Annotation> FieldRule parsePassword(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        T annotation = typeElement.getAnnotation(annotationType);
+        FieldRule fieldRule = parseSingle(typeElement, annotationType);
+        fieldRule.passwordScheme = (PasswordRule.Scheme) annotationType.getMethod("scheme").invoke(annotation);
+
+        System.out.println(fieldRule.passwordScheme.getRegex());
+
+        return fieldRule;
+    }
+
+    private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         T annotation = typeElement.getAnnotation(annotationType);
         FieldRule fieldRule = new FieldRule();
@@ -144,8 +161,7 @@ public class KubwaCompiler extends AbstractProcessor {
         fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
         fieldRule.fieldRule = getRuleType(annotation);
 
-        fieldRules.add(fieldRule);
-        return fieldRules;
+        return fieldRule;
     }
 
     private<T extends Annotation> List<FieldRule> parseList(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -155,12 +171,7 @@ public class KubwaCompiler extends AbstractProcessor {
         T[] annotationList = (T[]) annotationParent.annotationType().getMethod("value").invoke(annotationParent);
 
         for (T annotation : annotationList) {
-            FieldRule fieldRule = new FieldRule();
-            fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
-            fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
-            fieldRule.fieldRule = getRuleType(annotation);
-
-            fieldRules.add(fieldRule);
+            fieldRules.add(parseSingle(typeElement, annotationType));
         }
 
 
@@ -171,6 +182,29 @@ public class KubwaCompiler extends AbstractProcessor {
     private Class<? extends Rule> getRuleType(Annotation ruleAnnotation) {
         ValidateUsing validateUsing = ruleAnnotation.annotationType().getAnnotation(ValidateUsing.class);
         return validateUsing != null ? validateUsing.value() : null;
+    }
+
+    private Rule createRule(Class<? extends Rule> ruleType, final Annotation ruleAnnotation) {
+        Rule rule = null;
+
+        try {
+            if (Rule.class.isAssignableFrom(ruleType)) {
+                Constructor<?> constructor = ruleType.getDeclaredConstructor(
+                        ruleAnnotation.annotationType());
+                constructor.setAccessible(true);
+                rule = (Rule) constructor.newInstance(ruleAnnotation);
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return rule;
     }
 
     private void generate(Map<TypeElement, AnnotatedClass> annos) throws IOException {

@@ -55,7 +55,11 @@ public class CodeGenerator {
                 .addStatement("this.$N = $N", "context", "context");
 
         for (FieldRule fieldRule : fieldRuleList) {
-            builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule);
+            if (fieldRule.passwordScheme != null) {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
+            } else {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule);
+            }
         }
 
         return builder.build();

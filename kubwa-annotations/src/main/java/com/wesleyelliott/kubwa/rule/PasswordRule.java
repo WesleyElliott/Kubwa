@@ -6,8 +6,38 @@ package com.wesleyelliott.kubwa.rule;
 
 public class PasswordRule extends RegexRule {
 
+    private Scheme passwordScheme;
+
+    public PasswordRule(Scheme passwordScheme) {
+        this.passwordScheme = passwordScheme;
+    }
+
     @Override
     protected String getRegex() {
-        return "(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d]).+";
+        return passwordScheme.getRegex();
+    }
+
+    /*
+     * Thanks to Saripaar library for these Regex's
+     */
+    public enum Scheme {
+        ANY(".+"),
+        ALPHA("\\w+"),
+        ALPHA_MIXED_CASE("(?=.*[a-z])(?=.*[A-Z]).+"),
+        NUMERIC("\\d+"),
+        ALPHA_NUMERIC("(?=.*[a-zA-Z])(?=.*[\\d]).+"),
+        ALPHA_NUMERIC_MIXED_CASE("(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d]).+"),
+        ALPHA_NUMERIC_SYMBOLS("(?=.*[a-zA-Z])(?=.*[\\d])(?=.*([^\\w])).+"),
+        ALPHA_NUMERIC_MIXED_CASE_SYMBOLS("(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d])(?=.*([^\\w])).+");
+
+        private String regex;
+
+        Scheme(String regex) {
+            this.regex = regex;
+        }
+
+        public String getRegex() {
+            return regex;
+        }
     }
 }

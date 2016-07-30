@@ -1,5 +1,6 @@
 package com.wesleyelliott.kubwa;
 
+import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 /**
@@ -11,6 +12,10 @@ public class FieldRule {
     public String fieldName;
     public Class<? extends Rule> fieldRule;
     public int fieldErrorResource;
+
+    // Annotation Specific variables
+    // Password:
+    public PasswordRule.Scheme passwordScheme;
 
     public String getFieldName() {
         return fieldName + "Validation";

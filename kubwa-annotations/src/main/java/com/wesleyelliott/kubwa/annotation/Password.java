@@ -4,7 +4,6 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
@@ -19,11 +18,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Created by wesley on 2016/07/28.
  */
 @ValidateUsing(PasswordRule.class)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RUNTIME)
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE })
 public @interface Password {
-    String name();
     int errorMessage();
+    String name() default "passwordError";
+    PasswordRule.Scheme scheme() default PasswordRule.Scheme.ANY;
 
     @Target(TYPE)
     @Retention(RUNTIME)

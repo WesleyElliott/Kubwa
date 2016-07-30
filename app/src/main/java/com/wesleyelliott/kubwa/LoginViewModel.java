@@ -7,13 +7,14 @@ import android.view.View;
 
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.Password;
+import com.wesleyelliott.kubwa.rule.PasswordRule;
 
 
 /**
  * Created by wesley on 2016/07/28.
  */
 @Email(name = "emailError", errorMessage = R.string.email_error)
-@Password(name = "passwordError", errorMessage = R.string.password_error)
+@Password(name = "passwordError", errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
