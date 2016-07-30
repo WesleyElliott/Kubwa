@@ -6,8 +6,7 @@ package com.wesleyelliott.kubwa.rule;
 
 public class FullNameRule extends RegexRule {
 
-    @Override
-    protected String getRegex() {
-        return "^([\\w-]+)\\s+([\\w\\s'-]+)+$";
+    public FullNameRule() {
+        super("^([\\w-]+)\\s+([\\w\\s'-]+)+$");
     }
 }

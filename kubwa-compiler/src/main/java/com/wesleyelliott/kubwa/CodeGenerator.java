@@ -55,11 +55,19 @@ public class CodeGenerator {
                 .addStatement("this.$N = $N", "context", "context");
 
         for (FieldRule fieldRule : fieldRuleList) {
-            if (fieldRule.passwordScheme != null) {
-                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
-            } else {
-                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule);
+
+            switch (fieldRule.fieldRule.getSimpleName()) {
+                case "PasswordRule":
+                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
+                    break;
+                case "RegexRule":
+                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.regex);
+                    break;
+                default:
+                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule);
+                    break;
             }
+
         }
 
         return builder.build();

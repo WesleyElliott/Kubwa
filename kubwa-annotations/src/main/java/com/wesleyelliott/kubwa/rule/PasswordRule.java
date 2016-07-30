@@ -6,15 +6,8 @@ package com.wesleyelliott.kubwa.rule;
 
 public class PasswordRule extends RegexRule {
 
-    private Scheme passwordScheme;
-
     public PasswordRule(Scheme passwordScheme) {
-        this.passwordScheme = passwordScheme;
-    }
-
-    @Override
-    protected String getRegex() {
-        return passwordScheme.getRegex();
+        super(passwordScheme.getRegex());
     }
 
     /*

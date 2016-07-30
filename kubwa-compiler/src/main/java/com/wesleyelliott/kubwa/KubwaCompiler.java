@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
+import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 import com.wesleyelliott.kubwa.annotation.Email;
@@ -72,6 +73,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(IdNumber.class);
         annotations.add(MobileNumber.class);
         annotations.add(NotNull.class);
+        annotations.add(Regex.class);
 
         return annotations;
     }
@@ -79,7 +81,12 @@ public class KubwaCompiler extends AbstractProcessor {
     private Set<Class<? extends Annotation>> getSupportedAnnotationsList() {
         Set<Class<? extends Annotation>> annotations = new LinkedHashSet<>();
         annotations.add(Email.List.class);
+        annotations.add(FullName.List.class);
         annotations.add(Password.List.class);
+        annotations.add(IdNumber.List.class);
+        annotations.add(MobileNumber.List.class);
+        annotations.add(NotNull.List.class);
+        annotations.add(Regex.List.class);
 
         return annotations;
     }
@@ -112,8 +119,9 @@ public class KubwaCompiler extends AbstractProcessor {
                         if (getSupportedAnnotations().contains(supportedAnnotation)) {
                             // Single Annotation
                             if (supportedAnnotation.getSimpleName().equals(Password.class.getSimpleName())) {
-                                System.out.println("Password!");
                                 fieldRules.add(parsePassword(typeElement, supportedAnnotation));
+                            } else if (supportedAnnotation.getSimpleName().equals(Regex.class.getSimpleName())) {
+                                fieldRules.add(parseRegex(typeElement, supportedAnnotation));
                             } else {
                                 fieldRules.add(parseSingle(typeElement, supportedAnnotation));
                             }
@@ -148,7 +156,13 @@ public class KubwaCompiler extends AbstractProcessor {
         FieldRule fieldRule = parseSingle(typeElement, annotationType);
         fieldRule.passwordScheme = (PasswordRule.Scheme) annotationType.getMethod("scheme").invoke(annotation);
 
-        System.out.println(fieldRule.passwordScheme.getRegex());
+        return fieldRule;
+    }
+
+    private<T extends Annotation> FieldRule parseRegex(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        T annotation = typeElement.getAnnotation(annotationType);
+        FieldRule fieldRule = parseSingle(typeElement, annotationType);
+        fieldRule.regex = (String) annotationType.getMethod("regex").invoke(annotation);
 
         return fieldRule;
     }

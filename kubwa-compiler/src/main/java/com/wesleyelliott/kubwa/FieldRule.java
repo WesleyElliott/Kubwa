@@ -14,8 +14,12 @@ public class FieldRule {
     public int fieldErrorResource;
 
     // Annotation Specific variables
+
     // Password:
     public PasswordRule.Scheme passwordScheme;
+
+    // Regex
+    public String regex;
 
     public String getFieldName() {
         return fieldName + "Validation";

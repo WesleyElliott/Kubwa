@@ -6,8 +6,7 @@ package com.wesleyelliott.kubwa.rule;
 
 public class MobileNumberRule extends RegexRule {
 
-    @Override
-    protected String getRegex() {
-        return "(\\+\\d{1,3})\\d{10}";
+    public MobileNumberRule() {
+        super("(\\+\\d{1,3})\\d{10}");
     }
 }

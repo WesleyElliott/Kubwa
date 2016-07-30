@@ -6,9 +6,17 @@ import android.text.TextUtils;
  * Created by wesley on 2016/07/28.
  */
 
-public abstract class RegexRule extends Rule {
+public class RegexRule extends Rule {
 
-    protected abstract String getRegex();
+    private String regex;
+
+    public RegexRule(String regex) {
+        this.regex = regex;
+    }
+
+    protected String getRegex() {
+        return regex;
+    }
 
     @Override
     public boolean isValid(String value) {
