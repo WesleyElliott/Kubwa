@@ -13,8 +13,8 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 /**
  * Created by wesley on 2016/07/28.
  */
-@Email(name = "emailError", errorMessage = R.string.email_error)
-@Password(name = "passwordError", errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
+@Email(errorMessage = R.string.email_error)
+@Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
@@ -45,18 +45,20 @@ public class LoginViewModel extends BaseObservable {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validate()) {
-                    login();
-                } else {
-                    Log.d("TEST", "ERRORS!");
-                    notifyChange();
-                }
+                login();
             }
         };
     }
 
     private void login() {
-        Log.d("TEST", "NO ERRORS!");
+        validator.validateAll(getEmail(), getPassword());
+        notifyChange();
+
+        if (validator.isValid()) {
+            Log.d("TEST", "NO ERRORS!");
+        } else {
+            Log.d("TEST", "ERRORS!");
+        }
     }
 
     public String getEmailError() {
@@ -65,11 +67,5 @@ public class LoginViewModel extends BaseObservable {
 
     public String getPasswordError() {
         return validator.getPasswordErrorMessage();
-    }
-
-    private boolean validate() {
-        validator.validateAll(getEmail(), getPassword());
-
-        return validator.isValid();
     }
 }
