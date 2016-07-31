@@ -23,6 +23,18 @@
             app:error="@{viewModel.emailError}"/>
 
         <EditText
+            android:id="@+id/login_confirm_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:hint="@string/confirm_email_hint"
+            android:text="@={viewModel.confirmEmail}"
+            android:maxLines="1"
+            android:inputType="textEmailAddress"
+            app:error="@{viewModel.confirmEmailError}"/>
+
+        <EditText
             android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.CheckBox;
 
 import com.wesleyelliott.kubwa.annotation.Checked;
+import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.Password;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
@@ -16,11 +17,13 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
  * Created by wesley on 2016/07/28.
  */
 @Email(errorMessage = R.string.email_error)
+@ConfirmEmail(errorMessage = R.string.confirm_email_error)
 @Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
-@Checked(value = true, errorMessage = R.string.checked_error)
+@Checked(errorMessage = R.string.checked_error)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
+    private String confirmEmail;
     private String password;
     private boolean checked;
     LoginViewModelValidator validator;
@@ -35,6 +38,14 @@ public class LoginViewModel extends BaseObservable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getConfirmEmail() {
+        return confirmEmail;
+    }
+
+    public void setConfirmEmail(String confirmEmail) {
+        this.confirmEmail = confirmEmail;
     }
 
     public String getPassword() {
@@ -67,7 +78,7 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked());
+        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail());
         notifyChange();
 
         if (validator.isValid()) {
@@ -79,6 +90,10 @@ public class LoginViewModel extends BaseObservable {
 
     public String getEmailError() {
         return validator.getEmailErrorMessage();
+    }
+
+    public String getConfirmEmailError() {
+        return validator.getConfirmEmailErrorMessage();
     }
 
     public String getPasswordError() {

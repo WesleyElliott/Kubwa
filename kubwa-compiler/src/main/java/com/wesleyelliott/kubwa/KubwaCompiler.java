@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.annotation.Checked;
+import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
@@ -38,6 +39,7 @@ import javax.lang.model.util.Elements;
 
 import static com.squareup.javapoet.JavaFile.builder;
 import static javax.lang.model.SourceVersion.latestSupported;
+import static javax.tools.Diagnostic.Kind.ERROR;
 
 @AutoService(Processor.class)
 public class KubwaCompiler extends AbstractProcessor {
@@ -76,6 +78,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(NotNull.class);
         annotations.add(Regex.class);
         annotations.add(Checked.class);
+        annotations.add(ConfirmEmail.class);
 
         return annotations;
     }
@@ -90,6 +93,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(NotNull.List.class);
         annotations.add(Regex.List.class);
         annotations.add(Checked.List.class);
+        annotations.add(ConfirmEmail.List.class);
 
         return annotations;
     }
@@ -255,10 +259,15 @@ public class KubwaCompiler extends AbstractProcessor {
 
         for (AnnotatedClass annotatedClass : annos.values()) {
             String packageName = getPackageName(processingEnv.getElementUtils(), annotatedClass.typeElement);
-            TypeSpec generatedClass = CodeGenerator.generateClass(annotatedClass);
+            try {
+                TypeSpec generatedClass = CodeGenerator.generateClass(annotatedClass);
 
-            JavaFile javaFile = builder(packageName, generatedClass).build();
-            javaFile.writeTo(processingEnv.getFiler());
+                JavaFile javaFile = builder(packageName, generatedClass).build();
+                javaFile.writeTo(processingEnv.getFiler());
+            } catch (KubwaException e) {
+                processingEnv.getMessager().printMessage(ERROR, e.getMessage(), annotatedClass.typeElement);
+            }
+
         }
 
     }

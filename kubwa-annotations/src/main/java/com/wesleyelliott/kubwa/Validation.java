@@ -2,6 +2,7 @@ package com.wesleyelliott.kubwa;
 
 import android.content.Context;
 
+import com.wesleyelliott.kubwa.rule.ConfirmRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 /**
@@ -31,6 +32,15 @@ public class Validation<T> {
 
     public void validate(T value) {
         if (!rule.isValid(value)) {
+            message = errorMessageId != -1 ? context.getString(errorMessageId) : "Error";
+        } else {
+            message = null;
+        }
+    }
+
+    public void validate(T value, T value2) {
+        ConfirmRule confirmRule = (ConfirmRule) rule;
+        if (!confirmRule.isValid(value, value2)) {
             message = errorMessageId != -1 ? context.getString(errorMessageId) : "Error";
         } else {
             message = null;
