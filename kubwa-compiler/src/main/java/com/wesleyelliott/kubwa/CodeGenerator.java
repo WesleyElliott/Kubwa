@@ -6,6 +6,10 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.wesleyelliott.kubwa.rule.CheckedRule;
+import com.wesleyelliott.kubwa.rule.PasswordRule;
+import com.wesleyelliott.kubwa.rule.RegexRule;
+import com.wesleyelliott.kubwa.rule.Rule;
 
 import java.util.List;
 
@@ -55,19 +59,16 @@ public class CodeGenerator {
                 .addStatement("this.$N = $N", "context", "context");
 
         for (FieldRule fieldRule : fieldRuleList) {
-
-            switch (fieldRule.fieldRule.getSimpleName()) {
-                case "PasswordRule":
-                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
-                    break;
-                case "RegexRule":
-                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule, fieldRule.regex);
-                    break;
-                default:
-                    builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRule);
-                    break;
+            Class<? extends Rule> fieldRuleType = fieldRule.fieldRuleType;
+            if (Utils.isRuleType(fieldRuleType, PasswordRule.class)) {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
+            } else if (Utils.isRuleType(fieldRuleType, RegexRule.class)) {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.regex);
+            } else if (Utils.isRuleType(fieldRuleType, CheckedRule.class)) {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.checkedValue);
+            } else {
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }
-
         }
 
         return builder.build();
@@ -76,7 +77,7 @@ public class CodeGenerator {
     private static MethodSpec makeValidatorMethod(FieldRule fieldRule) {
         return methodBuilder(fieldRule.getMethodName())
                 .addModifiers(PUBLIC)
-                .addParameter(String.class, "value")
+                .addParameter(fieldRule.fieldRule.getType(), "value")
                 .addStatement("$L.validate(value);", fieldRule.getFieldName())
                 .build();
     }
@@ -121,7 +122,7 @@ public class CodeGenerator {
                 .addModifiers(PUBLIC);
 
         for (FieldRule fieldRule : fieldRuleList) {
-            builder.addParameter(String.class, fieldRule.getValueName());
+            builder.addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName());
             builder.addStatement("$L.validate($L);", fieldRule.getFieldName(), fieldRule.getValueName());
         }
 

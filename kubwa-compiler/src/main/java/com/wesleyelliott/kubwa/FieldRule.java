@@ -10,8 +10,9 @@ import com.wesleyelliott.kubwa.rule.Rule;
 public class FieldRule {
 
     public String fieldName;
-    public Class<? extends Rule> fieldRule;
+    public Class<? extends Rule> fieldRuleType;
     public int fieldErrorResource;
+    public Rule fieldRule;
 
     // Annotation Specific variables
 
@@ -20,6 +21,9 @@ public class FieldRule {
 
     // Regex
     public String regex;
+
+    // Checked
+    public Boolean checkedValue;
 
     public String getFieldName() {
         return fieldName + "Validation";

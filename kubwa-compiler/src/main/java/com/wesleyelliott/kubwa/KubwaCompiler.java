@@ -3,16 +3,17 @@ package com.wesleyelliott.kubwa;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.wesleyelliott.kubwa.annotation.IdNumber;
-import com.wesleyelliott.kubwa.annotation.Regex;
-import com.wesleyelliott.kubwa.rule.PasswordRule;
-import com.wesleyelliott.kubwa.rule.Rule;
+import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
+import com.wesleyelliott.kubwa.annotation.IdNumber;
 import com.wesleyelliott.kubwa.annotation.MobileNumber;
 import com.wesleyelliott.kubwa.annotation.NotNull;
 import com.wesleyelliott.kubwa.annotation.Password;
+import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.annotation.ValidateUsing;
+import com.wesleyelliott.kubwa.rule.PasswordRule;
+import com.wesleyelliott.kubwa.rule.Rule;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -74,6 +75,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(MobileNumber.class);
         annotations.add(NotNull.class);
         annotations.add(Regex.class);
+        annotations.add(Checked.class);
 
         return annotations;
     }
@@ -87,6 +89,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(MobileNumber.List.class);
         annotations.add(NotNull.List.class);
         annotations.add(Regex.List.class);
+        annotations.add(Checked.List.class);
 
         return annotations;
     }
@@ -118,14 +121,7 @@ public class KubwaCompiler extends AbstractProcessor {
 
                         if (getSupportedAnnotations().contains(supportedAnnotation)) {
                             // Single Annotation
-                            if (supportedAnnotation.getSimpleName().equals(Password.class.getSimpleName())) {
-                                fieldRules.add(parsePassword(typeElement, supportedAnnotation));
-                            } else if (supportedAnnotation.getSimpleName().equals(Regex.class.getSimpleName())) {
-                                fieldRules.add(parseRegex(typeElement, supportedAnnotation));
-                            } else {
-                                fieldRules.add(parseSingle(typeElement, supportedAnnotation));
-                            }
-
+                            fieldRules.add(parseSingle(typeElement, supportedAnnotation));
                         } else if (getSupportedAnnotationsList().contains(supportedAnnotation)) {
                             // List of Annotations
                             fieldRules = parseList(typeElement, supportedAnnotation);
@@ -151,9 +147,29 @@ public class KubwaCompiler extends AbstractProcessor {
         return annotatedClasses;
     }
 
+    private<T extends Annotation> FieldRule parse(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        FieldRule fieldRule = new FieldRule();
+
+        T annotation = typeElement.getAnnotation(annotationType);
+        fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
+        fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
+        fieldRule.fieldRuleType = getRuleType(annotation);
+        fieldRule.fieldRule = createRule(fieldRule.fieldRuleType, annotation);
+
+        return fieldRule;
+    }
+
+    private<T extends Annotation> FieldRule parseChecked(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        T annotation = typeElement.getAnnotation(annotationType);
+        FieldRule fieldRule = parse(typeElement, annotationType);
+        fieldRule.checkedValue = (Boolean) annotationType.getMethod("value").invoke(annotation);
+
+        return fieldRule;
+    }
+
     private<T extends Annotation> FieldRule parsePassword(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         T annotation = typeElement.getAnnotation(annotationType);
-        FieldRule fieldRule = parseSingle(typeElement, annotationType);
+        FieldRule fieldRule = parse(typeElement, annotationType);
         fieldRule.passwordScheme = (PasswordRule.Scheme) annotationType.getMethod("scheme").invoke(annotation);
 
         return fieldRule;
@@ -161,19 +177,24 @@ public class KubwaCompiler extends AbstractProcessor {
 
     private<T extends Annotation> FieldRule parseRegex(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         T annotation = typeElement.getAnnotation(annotationType);
-        FieldRule fieldRule = parseSingle(typeElement, annotationType);
+        FieldRule fieldRule = parse(typeElement, annotationType);
         fieldRule.regex = (String) annotationType.getMethod("regex").invoke(annotation);
 
         return fieldRule;
     }
 
     private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        FieldRule fieldRule;
 
-        T annotation = typeElement.getAnnotation(annotationType);
-        FieldRule fieldRule = new FieldRule();
-        fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
-        fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
-        fieldRule.fieldRule = getRuleType(annotation);
+        if (Utils.isAnnotationType(annotationType, Password.class)) {
+            fieldRule = parsePassword(typeElement, annotationType);
+        } else if (Utils.isAnnotationType(annotationType, Regex.class)) {
+            fieldRule = parseRegex(typeElement, annotationType);
+        } else if (Utils.isAnnotationType(annotationType, Checked.class)) {
+            fieldRule = parseChecked(typeElement, annotationType);
+        } else {
+            fieldRule = parse(typeElement, annotationType);
+        }
 
         return fieldRule;
     }
@@ -203,18 +224,24 @@ public class KubwaCompiler extends AbstractProcessor {
 
         try {
             if (Rule.class.isAssignableFrom(ruleType)) {
-                Constructor<?> constructor = ruleType.getDeclaredConstructor(
-                        ruleAnnotation.annotationType());
-                constructor.setAccessible(true);
-                rule = (Rule) constructor.newInstance(ruleAnnotation);
+                Constructor<?> constructor;
+
+                if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Password.class)) {
+                    constructor = ruleType.getDeclaredConstructor(PasswordRule.Scheme.class);
+                    constructor.setAccessible(true);
+                    rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("scheme").invoke(ruleAnnotation));
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Checked.class)) {
+                    constructor = ruleType.getDeclaredConstructor(Boolean.class);
+                    constructor.setAccessible(true);
+                    rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));
+                } else {
+                    constructor = ruleType.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+                    rule = (Rule) constructor.newInstance();
+                }
+
             }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -227,10 +254,6 @@ public class KubwaCompiler extends AbstractProcessor {
         }
 
         for (AnnotatedClass annotatedClass : annos.values()) {
-
-            System.out.println(annotatedClass.fieldRules.size());
-
-
             String packageName = getPackageName(processingEnv.getElementUtils(), annotatedClass.typeElement);
             TypeSpec generatedClass = CodeGenerator.generateClass(annotatedClass);
 

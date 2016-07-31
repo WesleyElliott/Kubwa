@@ -6,11 +6,12 @@ import android.text.TextUtils;
  * Created by wesley on 2016/07/28.
  */
 
-public class RegexRule extends Rule {
+public class RegexRule extends Rule<String> {
 
     private String regex;
 
     public RegexRule(String regex) {
+        super(String.class);
         this.regex = regex;
     }
 

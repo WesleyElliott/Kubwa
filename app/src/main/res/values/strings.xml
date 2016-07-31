@@ -3,8 +3,10 @@
 
     <string name="email_error">Invalid Email</string>
     <string name="password_error">Invalid Password</string>
+    <string name="checked_error">Must be checked</string>
 
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
+    <string name="checked_text">Check this</string>
     <string name="login_btn">Login</string>
 </resources>
