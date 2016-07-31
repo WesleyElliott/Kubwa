@@ -1,5 +1,7 @@
 package com.wesleyelliott.kubwa;
 
+import com.wesleyelliott.kubwa.fieldrule.FieldRule;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.wesleyelliott.kubwa;
 
+import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 import java.lang.annotation.Annotation;
@@ -19,10 +20,10 @@ public class Utils {
         return rule.getSimpleName().equals(type.getSimpleName());
     }
 
-    public static FieldRule getRule(List<FieldRule> fieldRuleList, Class<? extends Rule> ruleType) {
+    public static<T extends FieldRule> T getRule(List<FieldRule> fieldRuleList, Class<? extends Rule> ruleType) {
         for (FieldRule fieldRule : fieldRuleList) {
             if (fieldRule.fieldRuleType.equals(ruleType)) {
-                return fieldRule;
+                return (T) fieldRule;
             }
         }
         return null;

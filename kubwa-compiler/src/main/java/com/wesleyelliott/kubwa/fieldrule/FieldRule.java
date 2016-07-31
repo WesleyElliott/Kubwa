@@ -1,6 +1,5 @@
-package com.wesleyelliott.kubwa;
+package com.wesleyelliott.kubwa.fieldrule;
 
-import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 /**
@@ -13,17 +12,6 @@ public class FieldRule {
     public Class<? extends Rule> fieldRuleType;
     public int fieldErrorResource;
     public Rule fieldRule;
-
-    // Annotation Specific variables
-
-    // Password:
-    public PasswordRule.Scheme passwordScheme;
-
-    // Regex
-    public String regex;
-
-    // Checked
-    public Boolean checkedValue;
 
     public String getFieldName() {
         return fieldName + "Validation";

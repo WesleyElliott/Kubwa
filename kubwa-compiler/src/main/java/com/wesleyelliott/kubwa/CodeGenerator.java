@@ -6,6 +6,10 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.FieldRule;
+import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.rule.CheckedRule;
 import com.wesleyelliott.kubwa.rule.ConfirmEmailRule;
 import com.wesleyelliott.kubwa.rule.EmailRule;
@@ -62,13 +66,15 @@ public class CodeGenerator {
         for (FieldRule fieldRule : fieldRuleList) {
             Class<? extends Rule> fieldRuleType = fieldRule.fieldRuleType;
             if (Utils.isRuleType(fieldRuleType, PasswordRule.class)) {
-                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.passwordScheme.getClass(), fieldRule.passwordScheme);
+                PasswordFieldRule passwordFieldRule = Utils.getRule(fieldRuleList, PasswordRule.class);
+                builder.addStatement(passwordFieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, passwordFieldRule.fieldErrorResource, passwordFieldRule.fieldRuleType, passwordFieldRule.passwordScheme.getClass(), passwordFieldRule.passwordScheme);
             } else if (Utils.isRuleType(fieldRuleType, RegexRule.class)) {
-                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.regex);
+                RegexFieldRule regexFieldRule = Utils.getRule(fieldRuleList, RegexRule.class);
+                builder.addStatement(regexFieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, regexFieldRule.fieldErrorResource, regexFieldRule.fieldRuleType, regexFieldRule.regex);
             } else if (Utils.isRuleType(fieldRuleType, CheckedRule.class)) {
-                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType, fieldRule.checkedValue);
+                CheckedFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, CheckedRule.class);
+                builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.checkedValue);
             } else if (Utils.isRuleType(fieldRuleType, ConfirmEmailRule.class)) {
-
                 FieldRule emailFieldRule = Utils.getRule(fieldRuleList, EmailRule.class);
                 if (emailFieldRule == null) {
                     throw new KubwaException("ConfirmEmailRule requires an EmailRule present!");
