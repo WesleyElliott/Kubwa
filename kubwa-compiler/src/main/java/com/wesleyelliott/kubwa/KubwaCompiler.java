@@ -132,7 +132,7 @@ public class KubwaCompiler extends AbstractProcessor {
 
                         if (getSupportedAnnotations().contains(supportedAnnotation)) {
                             // Single Annotation
-                            fieldRules.add(parseSingle(typeElement, supportedAnnotation));
+                            fieldRules.add(parseSingle(typeElement, typeElement.getAnnotation(supportedAnnotation)));
                         } else if (getSupportedAnnotationsList().contains(supportedAnnotation)) {
                             // List of Annotations
                             fieldRules = parseList(typeElement, supportedAnnotation);
@@ -158,8 +158,7 @@ public class KubwaCompiler extends AbstractProcessor {
         return annotatedClasses;
     }
 
-    private<T extends Annotation, FR extends FieldRule> FR parse(FR fieldRule, TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        T annotation = typeElement.getAnnotation(annotationType);
+    private<T extends Annotation, FR extends FieldRule> FR parse(FR fieldRule, TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
         fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
         fieldRule.fieldRuleType = getRuleType(annotation);
@@ -168,41 +167,38 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
-    private<T extends Annotation> CheckedFieldRule parseChecked(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        T annotation = typeElement.getAnnotation(annotationType);
-        CheckedFieldRule fieldRule = parse(new CheckedFieldRule(), typeElement, annotationType);
-        fieldRule.checkedValue = (Boolean) annotationType.getMethod("value").invoke(annotation);
+    private<T extends Annotation> CheckedFieldRule parseChecked(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        CheckedFieldRule fieldRule = parse(new CheckedFieldRule(), typeElement, annotation);
+        fieldRule.checkedValue = (Boolean) annotation.annotationType().getMethod("value").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> PasswordFieldRule parsePassword(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        T annotation = typeElement.getAnnotation(annotationType);
-        PasswordFieldRule fieldRule = parse(new PasswordFieldRule(), typeElement, annotationType);
-        fieldRule.passwordScheme = (PasswordRule.Scheme) annotationType.getMethod("scheme").invoke(annotation);
+    private<T extends Annotation> PasswordFieldRule parsePassword(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        PasswordFieldRule fieldRule = parse(new PasswordFieldRule(), typeElement, annotation);
+        fieldRule.passwordScheme = (PasswordRule.Scheme) annotation.annotationType().getMethod("scheme").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> RegexFieldRule parseRegex(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        T annotation = typeElement.getAnnotation(annotationType);
-        RegexFieldRule fieldRule = parse(new RegexFieldRule(), typeElement, annotationType);
-        fieldRule.regex = (String) annotationType.getMethod("regex").invoke(annotation);
+    private<T extends Annotation> RegexFieldRule parseRegex(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        RegexFieldRule fieldRule = parse(new RegexFieldRule(), typeElement, annotation);
+        fieldRule.regex = (String) annotation.annotationType().getMethod("regex").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         FieldRule fieldRule;
 
-        if (Utils.isAnnotationType(annotationType, Password.class)) {
-            fieldRule = parsePassword(typeElement, annotationType);
-        } else if (Utils.isAnnotationType(annotationType, Regex.class)) {
-            fieldRule = parseRegex(typeElement, annotationType);
-        } else if (Utils.isAnnotationType(annotationType, Checked.class)) {
-            fieldRule = parseChecked(typeElement, annotationType);
+        if (Utils.isAnnotationType(annotation.annotationType(), Password.class)) {
+            fieldRule = parsePassword(typeElement, annotation);
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Regex.class)) {
+            fieldRule = parseRegex(typeElement, annotation);
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Checked.class)) {
+            fieldRule = parseChecked(typeElement, annotation);
         } else {
-            fieldRule = parse(new FieldRule(), typeElement, annotationType);
+            fieldRule = parse(new FieldRule(), typeElement, annotation);
         }
 
         return fieldRule;
@@ -215,7 +211,7 @@ public class KubwaCompiler extends AbstractProcessor {
         T[] annotationList = (T[]) annotationParent.annotationType().getMethod("value").invoke(annotationParent);
 
         for (T annotation : annotationList) {
-            fieldRules.add(parseSingle(typeElement, annotationType));
+            fieldRules.add(parseSingle(typeElement, annotation));
         }
 
 
