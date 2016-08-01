@@ -67,6 +67,30 @@
             android:onClick="@{viewModel.onCheckedChanged}"
             app:error="@{viewModel.checkedError}"/>
 
+        <EditText
+            android:id="@+id/login_min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/min_hint"
+            android:text="@={viewModel.min}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.minError}"/>
+
+        <EditText
+            android:id="@+id/login_max"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/max_hint"
+            android:text="@={viewModel.max}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.maxError}"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

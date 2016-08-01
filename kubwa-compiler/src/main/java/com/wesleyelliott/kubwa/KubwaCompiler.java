@@ -9,6 +9,8 @@ import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
+import com.wesleyelliott.kubwa.annotation.Max;
+import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.MobileNumber;
 import com.wesleyelliott.kubwa.annotation.NotNull;
 import com.wesleyelliott.kubwa.annotation.Password;
@@ -16,6 +18,8 @@ import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.annotation.ValidateUsing;
 import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.FieldRule;
+import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
@@ -85,6 +89,8 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Checked.class);
         annotations.add(ConfirmEmail.class);
         annotations.add(ConfirmPassword.class);
+        annotations.add(Min.class);
+        annotations.add(Max.class);
 
         return annotations;
     }
@@ -101,6 +107,8 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Checked.List.class);
         annotations.add(ConfirmEmail.List.class);
         annotations.add(ConfirmPassword.List.class);
+        annotations.add(Min.List.class);
+        annotations.add(Max.List.class);
 
         return annotations;
     }
@@ -167,6 +175,20 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
+    private<T extends Annotation> MinFieldRule parseMin(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        MinFieldRule fieldRule = parse(new MinFieldRule(), typeElement, annotation);
+        fieldRule.minValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
+
+        return fieldRule;
+    }
+
+    private<T extends Annotation> MaxFieldRule parseMax(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        MaxFieldRule fieldRule = parse(new MaxFieldRule(), typeElement, annotation);
+        fieldRule.maxValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
+
+        return fieldRule;
+    }
+
     private<T extends Annotation> CheckedFieldRule parseChecked(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         CheckedFieldRule fieldRule = parse(new CheckedFieldRule(), typeElement, annotation);
         fieldRule.checkedValue = (Boolean) annotation.annotationType().getMethod("value").invoke(annotation);
@@ -197,7 +219,11 @@ public class KubwaCompiler extends AbstractProcessor {
             fieldRule = parseRegex(typeElement, annotation);
         } else if (Utils.isAnnotationType(annotation.annotationType(), Checked.class)) {
             fieldRule = parseChecked(typeElement, annotation);
-        } else {
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Min.class)) {
+            fieldRule = parseMin(typeElement, annotation);
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Max.class)) {
+            fieldRule = parseMax(typeElement, annotation);
+        }  else {
             fieldRule = parse(new FieldRule(), typeElement, annotation);
         }
 
@@ -237,6 +263,10 @@ public class KubwaCompiler extends AbstractProcessor {
                     rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("scheme").invoke(ruleAnnotation));
                 } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Checked.class)) {
                     constructor = ruleType.getDeclaredConstructor(Boolean.class);
+                    constructor.setAccessible(true);
+                    rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Min.class) || Utils.isAnnotationType(ruleAnnotation.annotationType(), Max.class)) {
+                    constructor = ruleType.getDeclaredConstructor(Integer.class);
                     constructor.setAccessible(true);
                     rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));
                 } else {

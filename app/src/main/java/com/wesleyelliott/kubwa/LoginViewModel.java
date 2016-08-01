@@ -2,6 +2,7 @@ package com.wesleyelliott.kubwa;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -10,6 +11,8 @@ import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
+import com.wesleyelliott.kubwa.annotation.Max;
+import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.Password;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 
@@ -22,6 +25,8 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
 @ConfirmPassword(errorMessage = R.string.confirm_password_error)
 @Checked(errorMessage = R.string.checked_error)
+@Min(errorMessage = R.string.min_error, value = 10)
+@Max(errorMessage = R.string.max_error, value = 50)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
@@ -29,6 +34,8 @@ public class LoginViewModel extends BaseObservable {
     private String password;
     private String confirmPassword;
     private boolean checked;
+    private int min;
+    private int max;
     LoginViewModelValidator validator;
 
     public LoginViewModel(Context context) {
@@ -75,6 +82,22 @@ public class LoginViewModel extends BaseObservable {
         this.checked = checked;
     }
 
+    public String getMin() {
+        return Integer.toString(min);
+    }
+
+    public void setMin(String min) {
+        this.min = TextUtils.isEmpty(min) ? 0 : Integer.parseInt(min);
+    }
+
+    public String getMax() {
+        return Integer.toString(max);
+    }
+
+    public void setMax(String max) {
+        this.max = TextUtils.isEmpty(max) ? 0 : Integer.parseInt(max);
+    }
+
     public void onCheckedChanged(View v) {
         setChecked((((CheckBox) v).isChecked()));
     }
@@ -89,7 +112,7 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword());
+        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max);
         notifyChange();
 
         if (validator.isValid()) {
@@ -117,5 +140,13 @@ public class LoginViewModel extends BaseObservable {
 
     public String getCheckedError() {
         return validator.getCheckedErrorMessage();
+    }
+
+    public String getMinError() {
+        return validator.getMinErrorMessage();
+    }
+
+    public String getMaxError() {
+        return validator.getMaxErrorMessage();
     }
 }

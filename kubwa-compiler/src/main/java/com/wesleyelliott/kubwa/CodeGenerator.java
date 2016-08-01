@@ -8,12 +8,16 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.FieldRule;
+import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.rule.CheckedRule;
 import com.wesleyelliott.kubwa.rule.ConfirmEmailRule;
 import com.wesleyelliott.kubwa.rule.ConfirmPasswordRule;
 import com.wesleyelliott.kubwa.rule.EmailRule;
+import com.wesleyelliott.kubwa.rule.MaxRule;
+import com.wesleyelliott.kubwa.rule.MinRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.RegexRule;
 import com.wesleyelliott.kubwa.rule.Rule;
@@ -89,6 +93,12 @@ public class CodeGenerator {
                 }
 
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
+            } else if (Utils.isRuleType(fieldRuleType, MinRule.class)) {
+                MinFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, MinRule.class);
+                builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.minValue);
+            } else if (Utils.isRuleType(fieldRuleType, MaxRule.class)) {
+                MaxFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, MaxRule.class);
+                builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.maxValue);
             } else {
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }
