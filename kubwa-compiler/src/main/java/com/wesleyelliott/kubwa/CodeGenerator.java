@@ -71,13 +71,13 @@ public class CodeGenerator {
         for (FieldRule fieldRule : fieldRuleList) {
             Class<? extends Rule> fieldRuleType = fieldRule.fieldRuleType;
             if (Utils.isRuleType(fieldRuleType, PasswordRule.class)) {
-                PasswordFieldRule passwordFieldRule = Utils.getRule(fieldRuleList, PasswordRule.class);
+                PasswordFieldRule passwordFieldRule = (PasswordFieldRule) fieldRule;
                 builder.addStatement(passwordFieldRule.getFieldName() + " = new $T(context, $L, new $T($T.$L))", Validation.class, passwordFieldRule.fieldErrorResource, passwordFieldRule.fieldRuleType, passwordFieldRule.passwordScheme.getClass(), passwordFieldRule.passwordScheme);
             } else if (Utils.isRuleType(fieldRuleType, RegexRule.class)) {
-                RegexFieldRule regexFieldRule = Utils.getRule(fieldRuleList, RegexRule.class);
+                RegexFieldRule regexFieldRule = (RegexFieldRule) fieldRule;
                 builder.addStatement(regexFieldRule.getFieldName() + " = new $T(context, $L, new $T($S))", Validation.class, regexFieldRule.fieldErrorResource, regexFieldRule.fieldRuleType, regexFieldRule.regex);
             } else if (Utils.isRuleType(fieldRuleType, CheckedRule.class)) {
-                CheckedFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, CheckedRule.class);
+                CheckedFieldRule checkedFieldRule = (CheckedFieldRule) fieldRule;
                 builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.checkedValue);
             } else if (Utils.isRuleType(fieldRuleType, ConfirmEmailRule.class)) {
                 FieldRule emailFieldRule = Utils.getRule(fieldRuleList, EmailRule.class);
@@ -94,11 +94,11 @@ public class CodeGenerator {
 
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             } else if (Utils.isRuleType(fieldRuleType, MinRule.class)) {
-                MinFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, MinRule.class);
-                builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.minValue);
+                MinFieldRule minFieldRule = (MinFieldRule) fieldRule;
+                builder.addStatement(minFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, minFieldRule.fieldErrorResource, minFieldRule.fieldRuleType, minFieldRule.minValue);
             } else if (Utils.isRuleType(fieldRuleType, MaxRule.class)) {
-                MaxFieldRule checkedFieldRule = Utils.getRule(fieldRuleList, MaxRule.class);
-                builder.addStatement(checkedFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, checkedFieldRule.fieldErrorResource, checkedFieldRule.fieldRuleType, checkedFieldRule.maxValue);
+                MaxFieldRule maxFieldRule = (MaxFieldRule) fieldRule;
+                builder.addStatement(maxFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, maxFieldRule.fieldErrorResource, maxFieldRule.fieldRuleType, maxFieldRule.maxValue);
             } else {
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }
