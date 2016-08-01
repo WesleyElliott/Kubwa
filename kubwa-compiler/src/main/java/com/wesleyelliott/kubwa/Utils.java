@@ -20,10 +20,10 @@ public class Utils {
         return rule.getSimpleName().equals(type.getSimpleName());
     }
 
-    public static<T extends FieldRule> T getRule(List<FieldRule> fieldRuleList, Class<? extends Rule> ruleType) {
-        for (FieldRule fieldRule : fieldRuleList) {
+    public static<T extends FieldRule> T getRule(List<T> fieldRuleList, Class<? extends Rule> ruleType) {
+        for (T fieldRule : fieldRuleList) {
             if (fieldRule.fieldRuleType.equals(ruleType)) {
-                return (T) fieldRule;
+                return fieldRule;
             }
         }
         return null;
