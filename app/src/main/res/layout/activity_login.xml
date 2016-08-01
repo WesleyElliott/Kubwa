@@ -46,6 +46,18 @@
             android:inputType="textPassword"
             app:error="@{viewModel.passwordError}"/>
 
+        <EditText
+            android:id="@+id/login_confirm_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/confirm_password_hint"
+            android:text="@={viewModel.confirmPassword}"
+            android:maxLines="1"
+            android:inputType="textPassword"
+            app:error="@{viewModel.confirmPasswordError}"/>
+
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

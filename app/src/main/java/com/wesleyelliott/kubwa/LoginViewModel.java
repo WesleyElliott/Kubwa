@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 
 import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
+import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.Password;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
@@ -19,12 +20,14 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @Email(errorMessage = R.string.email_error)
 @ConfirmEmail(errorMessage = R.string.confirm_email_error)
 @Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
+@ConfirmPassword(errorMessage = R.string.confirm_password_error)
 @Checked(errorMessage = R.string.checked_error)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
     private String confirmEmail;
     private String password;
+    private String confirmPassword;
     private boolean checked;
     LoginViewModelValidator validator;
 
@@ -56,6 +59,14 @@ public class LoginViewModel extends BaseObservable {
         this.password = password;
     }
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
     public boolean isChecked() {
         return checked;
     }
@@ -78,7 +89,7 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail());
+        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword());
         notifyChange();
 
         if (validator.isValid()) {
@@ -98,6 +109,10 @@ public class LoginViewModel extends BaseObservable {
 
     public String getPasswordError() {
         return validator.getPasswordErrorMessage();
+    }
+
+    public String getConfirmPasswordError() {
+        return validator.getConfirmPasswordErrorMessage();
     }
 
     public String getCheckedError() {

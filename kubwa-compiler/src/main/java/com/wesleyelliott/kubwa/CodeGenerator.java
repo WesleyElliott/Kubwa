@@ -12,6 +12,7 @@ import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.rule.CheckedRule;
 import com.wesleyelliott.kubwa.rule.ConfirmEmailRule;
+import com.wesleyelliott.kubwa.rule.ConfirmPasswordRule;
 import com.wesleyelliott.kubwa.rule.EmailRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.RegexRule;
@@ -81,6 +82,13 @@ public class CodeGenerator {
                 }
 
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
+            } else if (Utils.isRuleType(fieldRuleType, ConfirmPasswordRule.class)) {
+                FieldRule passwordFieldRule = Utils.getRule(fieldRuleList, PasswordRule.class);
+                if (passwordFieldRule == null) {
+                    throw new KubwaException("ConfirmPasswordRule requires an PasswordRule present!");
+                }
+
+                builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             } else {
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }
@@ -90,7 +98,7 @@ public class CodeGenerator {
     }
 
     private static MethodSpec.Builder makeValidatorStatement(MethodSpec.Builder builder, FieldRule fieldRule) {
-        if (Utils.isRuleType(fieldRule.fieldRuleType, ConfirmEmailRule.class)) {
+        if (Utils.isRuleType(fieldRule.fieldRuleType, ConfirmEmailRule.class) || Utils.isRuleType(fieldRule.fieldRuleType, ConfirmPasswordRule.class)) {
             builder.addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName() + "1")
                     .addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName() + "2")
                     .addStatement("$L.validate($L, $L)", fieldRule.getFieldName(), fieldRule.getValueName() + "1", fieldRule.getValueName() + "2");
@@ -152,6 +160,10 @@ public class CodeGenerator {
                 FieldRule emailFieldRule = Utils.getRule(fieldRuleList, EmailRule.class);
                 builder.addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName());
                 builder.addStatement("$L.validate($L, $L);", fieldRule.getFieldName(), fieldRule.getValueName(), emailFieldRule.getValueName());
+            } else if(Utils.isRuleType(fieldRule.fieldRuleType, ConfirmPasswordRule.class)) {
+                FieldRule passwordFieldRule = Utils.getRule(fieldRuleList, PasswordRule.class);
+                builder.addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName());
+                builder.addStatement("$L.validate($L, $L);", fieldRule.getFieldName(), fieldRule.getValueName(), passwordFieldRule.getValueName());
             } else {
                 builder.addParameter(fieldRule.fieldRule.getType(), fieldRule.getValueName());
                 builder.addStatement("$L.validate($L);", fieldRule.getFieldName(), fieldRule.getValueName());

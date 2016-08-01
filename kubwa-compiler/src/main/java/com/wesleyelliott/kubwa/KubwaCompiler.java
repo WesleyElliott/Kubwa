@@ -5,6 +5,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
+import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
@@ -83,6 +84,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Regex.class);
         annotations.add(Checked.class);
         annotations.add(ConfirmEmail.class);
+        annotations.add(ConfirmPassword.class);
 
         return annotations;
     }
@@ -98,6 +100,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Regex.List.class);
         annotations.add(Checked.List.class);
         annotations.add(ConfirmEmail.List.class);
+        annotations.add(ConfirmPassword.List.class);
 
         return annotations;
     }
