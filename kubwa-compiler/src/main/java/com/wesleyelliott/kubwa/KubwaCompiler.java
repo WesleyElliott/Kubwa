@@ -183,7 +183,7 @@ public class KubwaCompiler extends AbstractProcessor {
         // Check we haven't hit a duplicate
         String annotationName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
         if (processedRules.contains(annotationName)) {
-            throw new KubwaException("Duplicate Validation Names found: " + annotationName);
+            throw new KubwaException("Duplicate Validation Names found for " + annotation.annotationType().getSimpleName() + " : " + annotationName);
         }
         processedRules.add(annotationName);
 
