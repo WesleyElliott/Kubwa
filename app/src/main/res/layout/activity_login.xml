@@ -94,6 +94,18 @@
             android:inputType="number"
             app:error="@{viewModel.maxError}"/>
 
+        <EditText
+            android:id="@+id/login_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/range_hint"
+            android:text="@={viewModel.range}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.rangeError}"/>
+
         <Spinner
             android:id="@+id/login_spinner"
             android:layout_width="match_parent"

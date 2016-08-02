@@ -16,6 +16,7 @@ import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.Max;
 import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.Password;
+import com.wesleyelliott.kubwa.annotation.Range;
 import com.wesleyelliott.kubwa.annotation.Select;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 
@@ -30,6 +31,7 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @Checked(errorMessage = R.string.checked_error)
 @Min(errorMessage = R.string.min_error, value = 10)
 @Max(errorMessage = R.string.max_error, value = 50)
+@Range(errorMessage = R.string.range_error, min = 10, max = 20, includeBounds = true)
 @Select(errorMessage = R.string.spinner_error, value = 0)
 public class LoginViewModel extends BaseObservable {
 
@@ -40,6 +42,7 @@ public class LoginViewModel extends BaseObservable {
     private boolean checked;
     private int min;
     private int max;
+    private int range;
     private int spinnerIndex;
     private SpinnerAdapter adapter;
 
@@ -50,6 +53,9 @@ public class LoginViewModel extends BaseObservable {
         adapter = new SpinnerAdapter(context);
         adapter.addAll("Android", "iOS", "Windows Mobile", "Blackberry");
     }
+
+
+    // Field Getters / Setters
 
     public String getEmail() {
         return email;
@@ -107,6 +113,14 @@ public class LoginViewModel extends BaseObservable {
         this.max = TextUtils.isEmpty(max) ? 0 : Integer.parseInt(max);
     }
 
+    public String getRange() {
+        return Integer.toString(range);
+    }
+
+    public void setRange(String range) {
+        this.range = TextUtils.isEmpty(range) ? 0 : Integer.parseInt(range);
+    }
+
     public void setSpinnerIndex(int spinnerIndex) {
         this.spinnerIndex = spinnerIndex;
     }
@@ -114,6 +128,8 @@ public class LoginViewModel extends BaseObservable {
     public int getSpinnerIndex() {
         return spinnerIndex;
     }
+
+    // Custom Methods
 
     public SpinnerAdapter getSpinnerAdapter() {
         return adapter;
@@ -147,7 +163,7 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max, getSpinnerIndex());
+        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max, getSpinnerIndex(), range);
         notifyChange();
 
         if (validator.isValid()) {
@@ -156,6 +172,8 @@ public class LoginViewModel extends BaseObservable {
             Log.d("TEST", "ERRORS!");
         }
     }
+
+    // Errors
 
     public String getEmailError() {
         return validator.getEmailErrorMessage();
@@ -187,5 +205,9 @@ public class LoginViewModel extends BaseObservable {
 
     public String getSpinnerError() {
         return validator.getSpinnerErrorMessage();
+    }
+
+    public String getRangeError() {
+        return "";
     }
 }

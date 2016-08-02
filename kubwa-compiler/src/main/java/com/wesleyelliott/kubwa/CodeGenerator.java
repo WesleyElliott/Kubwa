@@ -11,6 +11,7 @@ import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.RangeFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
 import com.wesleyelliott.kubwa.rule.CheckedRule;
@@ -20,6 +21,7 @@ import com.wesleyelliott.kubwa.rule.EmailRule;
 import com.wesleyelliott.kubwa.rule.MaxRule;
 import com.wesleyelliott.kubwa.rule.MinRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
+import com.wesleyelliott.kubwa.rule.RangeRule;
 import com.wesleyelliott.kubwa.rule.RegexRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 import com.wesleyelliott.kubwa.rule.SelectRule;
@@ -104,6 +106,9 @@ public class CodeGenerator {
             } else if (Utils.isRuleType(fieldRuleType, SelectRule.class)) {
                 SelectFieldRule selectFieldRule = (SelectFieldRule) fieldRule;
                 builder.addStatement(selectFieldRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, selectFieldRule.fieldErrorResource, selectFieldRule.fieldRuleType, selectFieldRule.spinnerMinValue);
+            } else if (Utils.isRuleType(fieldRuleType, RangeRule.class)) {
+                RangeFieldRule rangeFieldRule = (RangeFieldRule) fieldRule;
+                builder.addStatement(rangeFieldRule.getFieldName() + " = new $T(context, $L, new $T($L, $L, $L))", Validation.class, rangeFieldRule.fieldErrorResource, rangeFieldRule.fieldRuleType, rangeFieldRule.minValue, rangeFieldRule.maxValue, rangeFieldRule.includeBounds);
             } else {
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }

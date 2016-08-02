@@ -4,7 +4,13 @@ import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
 /**
  * Created by wesley on 2016/07/31.
@@ -27,5 +33,24 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static boolean classHasNameDuplicates(Set<? extends Element> elements, List<Class<? extends Annotation>> supportedAnnotations) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Set<String> annotationNames = new HashSet<>();
+
+        for (Element element : elements) {
+            for (Class<? extends Annotation> annotation : supportedAnnotations) {
+                TypeElement typeElement = (TypeElement) element;
+                String annotationName = (String) annotation.getMethod("name").invoke(typeElement.getAnnotation(annotation));
+
+                if (annotationNames.contains(annotationName)) {
+                    return true;
+                }
+
+                annotationNames.add(annotationName);
+            }
+        }
+
+        return false;
     }
 }

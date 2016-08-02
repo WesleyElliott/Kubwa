@@ -14,6 +14,7 @@ import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.MobileNumber;
 import com.wesleyelliott.kubwa.annotation.NotNull;
 import com.wesleyelliott.kubwa.annotation.Password;
+import com.wesleyelliott.kubwa.annotation.Range;
 import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.annotation.Select;
 import com.wesleyelliott.kubwa.annotation.ValidateUsing;
@@ -22,6 +23,7 @@ import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.RangeFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
@@ -54,6 +56,8 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 @AutoService(Processor.class)
 public class KubwaCompiler extends AbstractProcessor {
+
+    private List<String> processedRules = new ArrayList<>();
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -94,6 +98,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Min.class);
         annotations.add(Max.class);
         annotations.add(Select.class);
+        annotations.add(Range.class);
 
         return annotations;
     }
@@ -113,6 +118,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Min.List.class);
         annotations.add(Max.List.class);
         annotations.add(Select.List.class);
+        annotations.add(Range.List.class);
 
         return annotations;
     }
@@ -136,11 +142,11 @@ public class KubwaCompiler extends AbstractProcessor {
         for (Class<? extends Annotation> supportedAnnotation : getAllSupportedAnnotations()) {
             for (Element element : env.getElementsAnnotatedWith(supportedAnnotation)) {
                 if (element.getKind() == ElementKind.CLASS) {
-                    try {
+                    TypeElement typeElement = (TypeElement) element;
+                    AnnotatedClass annotatedClass;
+                    List<FieldRule> fieldRules = new ArrayList<>();
 
-                        TypeElement typeElement = (TypeElement) element;
-                        AnnotatedClass annotatedClass;
-                        List<FieldRule> fieldRules = new ArrayList<>();
+                    try {
 
                         if (getSupportedAnnotations().contains(supportedAnnotation)) {
                             // Single Annotation
@@ -159,6 +165,8 @@ public class KubwaCompiler extends AbstractProcessor {
 
                         annotatedClass.addFieldRules(fieldRules);
                         annotatedClasses.put(typeElement, annotatedClass);
+                    } catch (KubwaException kubwaE) {
+                        processingEnv.getMessager().printMessage(ERROR, kubwaE.getMessage(), typeElement);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -170,7 +178,15 @@ public class KubwaCompiler extends AbstractProcessor {
         return annotatedClasses;
     }
 
-    private<T extends Annotation, FR extends FieldRule> FR parse(FR fieldRule, TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation, FR extends FieldRule> FR parse(FR fieldRule, TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
+
+        // Check we haven't hit a duplicate
+        String annotationName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
+        if (processedRules.contains(annotationName)) {
+            throw new KubwaException("Duplicate Validation Names found: " + annotationName);
+        }
+        processedRules.add(annotationName);
+
         fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
         fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
         fieldRule.fieldRuleType = getRuleType(annotation);
@@ -179,49 +195,58 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
-    private<T extends Annotation> SelectFieldRule parseSpinner(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> SelectFieldRule parseSpinner(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         SelectFieldRule fieldRule = parse(new SelectFieldRule(), typeElement, annotation);
         fieldRule.spinnerMinValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> MinFieldRule parseMin(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> RangeFieldRule parseRange(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
+        RangeFieldRule fieldRule = parse(new RangeFieldRule(), typeElement, annotation);
+        fieldRule.minValue = (Integer) annotation.annotationType().getMethod("min").invoke(annotation);
+        fieldRule.maxValue = (Integer) annotation.annotationType().getMethod("max").invoke(annotation);
+        fieldRule.includeBounds = (Boolean) annotation.annotationType().getMethod("includeBounds").invoke(annotation);
+
+        return fieldRule;
+    }
+
+    private<T extends Annotation> MinFieldRule parseMin(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         MinFieldRule fieldRule = parse(new MinFieldRule(), typeElement, annotation);
         fieldRule.minValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> MaxFieldRule parseMax(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> MaxFieldRule parseMax(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         MaxFieldRule fieldRule = parse(new MaxFieldRule(), typeElement, annotation);
         fieldRule.maxValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> CheckedFieldRule parseChecked(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> CheckedFieldRule parseChecked(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         CheckedFieldRule fieldRule = parse(new CheckedFieldRule(), typeElement, annotation);
         fieldRule.checkedValue = (Boolean) annotation.annotationType().getMethod("value").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> PasswordFieldRule parsePassword(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> PasswordFieldRule parsePassword(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         PasswordFieldRule fieldRule = parse(new PasswordFieldRule(), typeElement, annotation);
         fieldRule.passwordScheme = (PasswordRule.Scheme) annotation.annotationType().getMethod("scheme").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> RegexFieldRule parseRegex(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> RegexFieldRule parseRegex(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         RegexFieldRule fieldRule = parse(new RegexFieldRule(), typeElement, annotation);
         fieldRule.regex = (String) annotation.annotationType().getMethod("regex").invoke(annotation);
 
         return fieldRule;
     }
 
-    private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> FieldRule parseSingle(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         FieldRule fieldRule;
 
         if (Utils.isAnnotationType(annotation.annotationType(), Password.class)) {
@@ -236,6 +261,8 @@ public class KubwaCompiler extends AbstractProcessor {
             fieldRule = parseMax(typeElement, annotation);
         } else if (Utils.isAnnotationType(annotation.annotationType(), Select.class)) {
             fieldRule = parseSpinner(typeElement, annotation);
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Range.class)) {
+            fieldRule = parseRange(typeElement, annotation);
         } else {
             fieldRule = parse(new FieldRule(), typeElement, annotation);
         }
@@ -243,7 +270,7 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
-    private<T extends Annotation> List<FieldRule> parseList(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private<T extends Annotation> List<FieldRule> parseList(TypeElement typeElement, Class<T> annotationType) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         List<FieldRule> fieldRules = new ArrayList<>();
         T annotationParent = typeElement.getAnnotation(annotationType);
 
@@ -284,6 +311,13 @@ public class KubwaCompiler extends AbstractProcessor {
                     constructor = ruleType.getDeclaredConstructor(Integer.class);
                     constructor.setAccessible(true);
                     rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Range.class)) {
+                    constructor = ruleType.getDeclaredConstructor(Integer.class, Integer.class, Boolean.class);
+                    constructor.setAccessible(true);
+                    Integer min = (Integer) ruleAnnotation.annotationType().getMethod("min").invoke(ruleAnnotation);
+                    Integer max = (Integer) ruleAnnotation.annotationType().getMethod("max").invoke(ruleAnnotation);
+                    Boolean includeBounds = (Boolean) ruleAnnotation.annotationType().getMethod("includeBounds").invoke(ruleAnnotation);
+                    rule = (Rule) constructor.newInstance(min, max, includeBounds);
                 } else {
                     constructor = ruleType.getDeclaredConstructor();
                     constructor.setAccessible(true);
