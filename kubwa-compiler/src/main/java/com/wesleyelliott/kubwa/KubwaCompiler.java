@@ -15,6 +15,7 @@ import com.wesleyelliott.kubwa.annotation.MobileNumber;
 import com.wesleyelliott.kubwa.annotation.NotNull;
 import com.wesleyelliott.kubwa.annotation.Password;
 import com.wesleyelliott.kubwa.annotation.Regex;
+import com.wesleyelliott.kubwa.annotation.Select;
 import com.wesleyelliott.kubwa.annotation.ValidateUsing;
 import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.FieldRule;
@@ -22,6 +23,7 @@ import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
@@ -91,6 +93,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(ConfirmPassword.class);
         annotations.add(Min.class);
         annotations.add(Max.class);
+        annotations.add(Select.class);
 
         return annotations;
     }
@@ -109,6 +112,7 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(ConfirmPassword.List.class);
         annotations.add(Min.List.class);
         annotations.add(Max.List.class);
+        annotations.add(Select.List.class);
 
         return annotations;
     }
@@ -175,6 +179,13 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
+    private<T extends Annotation> SelectFieldRule parseSpinner(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        SelectFieldRule fieldRule = parse(new SelectFieldRule(), typeElement, annotation);
+        fieldRule.spinnerMinValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
+
+        return fieldRule;
+    }
+
     private<T extends Annotation> MinFieldRule parseMin(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         MinFieldRule fieldRule = parse(new MinFieldRule(), typeElement, annotation);
         fieldRule.minValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
@@ -223,7 +234,9 @@ public class KubwaCompiler extends AbstractProcessor {
             fieldRule = parseMin(typeElement, annotation);
         } else if (Utils.isAnnotationType(annotation.annotationType(), Max.class)) {
             fieldRule = parseMax(typeElement, annotation);
-        }  else {
+        } else if (Utils.isAnnotationType(annotation.annotationType(), Select.class)) {
+            fieldRule = parseSpinner(typeElement, annotation);
+        } else {
             fieldRule = parse(new FieldRule(), typeElement, annotation);
         }
 
@@ -265,7 +278,9 @@ public class KubwaCompiler extends AbstractProcessor {
                     constructor = ruleType.getDeclaredConstructor(Boolean.class);
                     constructor.setAccessible(true);
                     rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));
-                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Min.class) || Utils.isAnnotationType(ruleAnnotation.annotationType(), Max.class)) {
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Min.class)
+                        || Utils.isAnnotationType(ruleAnnotation.annotationType(), Max.class)
+                        || Utils.isAnnotationType(ruleAnnotation.annotationType(), Select.class)) {
                     constructor = ruleType.getDeclaredConstructor(Integer.class);
                     constructor.setAccessible(true);
                     rule = (Rule) constructor.newInstance(ruleAnnotation.annotationType().getMethod("value").invoke(ruleAnnotation));

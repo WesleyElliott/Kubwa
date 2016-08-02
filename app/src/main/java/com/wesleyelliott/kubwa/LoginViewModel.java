@@ -5,7 +5,9 @@ import android.databinding.BaseObservable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 
 import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
@@ -14,6 +16,7 @@ import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.Max;
 import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.Password;
+import com.wesleyelliott.kubwa.annotation.Select;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 
 
@@ -27,6 +30,7 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @Checked(errorMessage = R.string.checked_error)
 @Min(errorMessage = R.string.min_error, value = 10)
 @Max(errorMessage = R.string.max_error, value = 50)
+@Select(errorMessage = R.string.spinner_error, value = 0)
 public class LoginViewModel extends BaseObservable {
 
     private String email;
@@ -36,10 +40,15 @@ public class LoginViewModel extends BaseObservable {
     private boolean checked;
     private int min;
     private int max;
+    private int spinnerIndex;
+    private SpinnerAdapter adapter;
+
     LoginViewModelValidator validator;
 
     public LoginViewModel(Context context) {
         validator = new LoginViewModelValidator(context);
+        adapter = new SpinnerAdapter(context);
+        adapter.addAll("Android", "iOS", "Windows Mobile", "Blackberry");
     }
 
     public String getEmail() {
@@ -98,6 +107,18 @@ public class LoginViewModel extends BaseObservable {
         this.max = TextUtils.isEmpty(max) ? 0 : Integer.parseInt(max);
     }
 
+    public void setSpinnerIndex(int spinnerIndex) {
+        this.spinnerIndex = spinnerIndex;
+    }
+
+    public int getSpinnerIndex() {
+        return spinnerIndex;
+    }
+
+    public SpinnerAdapter getSpinnerAdapter() {
+        return adapter;
+    }
+
     public void onCheckedChanged(View v) {
         setChecked((((CheckBox) v).isChecked()));
     }
@@ -111,8 +132,22 @@ public class LoginViewModel extends BaseObservable {
         };
     }
 
+    public Spinner.OnItemSelectedListener onSelectionChanged() {
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                setSpinnerIndex(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        };
+    }
+
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max);
+        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max, getSpinnerIndex());
         notifyChange();
 
         if (validator.isValid()) {
@@ -148,5 +183,9 @@ public class LoginViewModel extends BaseObservable {
 
     public String getMaxError() {
         return validator.getMaxErrorMessage();
+    }
+
+    public String getSpinnerError() {
+        return validator.getSpinnerErrorMessage();
     }
 }

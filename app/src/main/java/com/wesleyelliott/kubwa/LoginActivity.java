@@ -21,5 +21,6 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel = new LoginViewModel(this);
         ActivityLoginBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(loginViewModel);
+        binding.setSpinnerAdapter(loginViewModel.getSpinnerAdapter());
     }
 }

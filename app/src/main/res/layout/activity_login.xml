@@ -4,6 +4,9 @@
 
     <data>
         <variable name="viewModel" type="com.wesleyelliott.kubwa.LoginViewModel" />
+        <variable
+            name="spinnerAdapter"
+            type="com.wesleyelliott.kubwa.SpinnerAdapter" />
     </data>
     <LinearLayout
         android:orientation="vertical"
@@ -90,6 +93,16 @@
             android:maxLines="1"
             android:inputType="number"
             app:error="@{viewModel.maxError}"/>
+
+        <Spinner
+            android:id="@+id/login_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            app:spinnerError="@{viewModel.spinnerError}"
+            app:adapter="@{spinnerAdapter}"
+            app:selectionChange="@{viewModel.onSelectionChanged}" />
 
         <Button
             android:layout_width="wrap_content"

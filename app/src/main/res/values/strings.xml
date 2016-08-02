@@ -8,6 +8,7 @@
     <string name="checked_error">Must be checked</string>
     <string name="min_error">Must be greater than 10</string>
     <string name="max_error">Must be less than 50</string>
+    <string name="spinner_error">Please select and option</string>
 
     <string name="email_hint">Email</string>
     <string name="confirm_email_hint">Confirm Email</string>
@@ -16,5 +17,6 @@
     <string name="checked_text">Check this</string>
     <string name="min_hint">Must be greater than 10</string>
     <string name="max_hint">Must be less than 50</string>
+    <string name="spinner_hint">Select One</string>
     <string name="login_btn">Login</string>
 </resources>
