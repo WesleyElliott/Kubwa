@@ -18,7 +18,8 @@ public class FieldRule {
     }
 
     public String getMethodName() {
-        return "validate" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        String validateMethodName = fieldName.replace("Error", "");
+        return "validate" + Character.toUpperCase(validateMethodName.charAt(0)) + validateMethodName.substring(1);
     }
 
     public String getErrorMessageMethodName() {
