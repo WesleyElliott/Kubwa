@@ -6,6 +6,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
+import com.wesleyelliott.kubwa.annotation.CreditCard;
 import com.wesleyelliott.kubwa.annotation.Email;
 import com.wesleyelliott.kubwa.annotation.FullName;
 import com.wesleyelliott.kubwa.annotation.IdNumber;
@@ -17,8 +18,10 @@ import com.wesleyelliott.kubwa.annotation.Password;
 import com.wesleyelliott.kubwa.annotation.Range;
 import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.annotation.Select;
+import com.wesleyelliott.kubwa.annotation.TaxNumber;
 import com.wesleyelliott.kubwa.annotation.ValidateUsing;
 import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.CreditCardFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
@@ -26,6 +29,7 @@ import com.wesleyelliott.kubwa.fieldrule.PasswordFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RangeFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
+import com.wesleyelliott.kubwa.rule.CreditCardRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
@@ -99,6 +103,8 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Max.class);
         annotations.add(Select.class);
         annotations.add(Range.class);
+        annotations.add(CreditCard.class);
+        annotations.add(TaxNumber.class);
 
         return annotations;
     }
@@ -119,6 +125,8 @@ public class KubwaCompiler extends AbstractProcessor {
         annotations.add(Max.List.class);
         annotations.add(Select.List.class);
         annotations.add(Range.List.class);
+        annotations.add(CreditCard.List.class);
+        annotations.add(TaxNumber.List.class);
 
         return annotations;
     }
@@ -195,6 +203,13 @@ public class KubwaCompiler extends AbstractProcessor {
         return fieldRule;
     }
 
+    private<T extends Annotation> CreditCardFieldRule parseCreditCard(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
+        CreditCardFieldRule fieldRule = parse(new CreditCardFieldRule(), typeElement, annotation);
+        fieldRule.creditCardTypes = (CreditCardRule.Type[]) annotation.annotationType().getMethod("types").invoke(annotation);
+
+        return fieldRule;
+    }
+
     private<T extends Annotation> SelectFieldRule parseSpinner(TypeElement typeElement, T annotation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, KubwaException {
         SelectFieldRule fieldRule = parse(new SelectFieldRule(), typeElement, annotation);
         fieldRule.spinnerMinValue = (Integer) annotation.annotationType().getMethod("value").invoke(annotation);
@@ -263,6 +278,8 @@ public class KubwaCompiler extends AbstractProcessor {
             fieldRule = parseSpinner(typeElement, annotation);
         } else if (Utils.isAnnotationType(annotation.annotationType(), Range.class)) {
             fieldRule = parseRange(typeElement, annotation);
+        } else if (Utils.isAnnotationType(annotation.annotationType(), CreditCard.class)) {
+            fieldRule = parseCreditCard(typeElement, annotation);
         } else {
             fieldRule = parse(new FieldRule(), typeElement, annotation);
         }
@@ -318,6 +335,15 @@ public class KubwaCompiler extends AbstractProcessor {
                     Integer max = (Integer) ruleAnnotation.annotationType().getMethod("max").invoke(ruleAnnotation);
                     Boolean includeBounds = (Boolean) ruleAnnotation.annotationType().getMethod("includeBounds").invoke(ruleAnnotation);
                     rule = (Rule) constructor.newInstance(min, max, includeBounds);
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), CreditCard.class)) {
+                    constructor = ruleType.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+                    rule = (CreditCardRule) constructor.newInstance();
+
+                    CreditCardRule.Type[] creditCardTypes = (CreditCardRule.Type[]) ruleAnnotation.annotationType().getMethod("types").invoke(ruleAnnotation);
+                    for (CreditCardRule.Type type : creditCardTypes) {
+                        ((CreditCardRule) rule).addCreditCard(type);
+                    }
                 } else {
                     constructor = ruleType.getDeclaredConstructor();
                     constructor.setAccessible(true);

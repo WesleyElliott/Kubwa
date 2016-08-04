@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.wesleyelliott.kubwa.fieldrule.CheckedFieldRule;
+import com.wesleyelliott.kubwa.fieldrule.CreditCardFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.FieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MaxFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.MinFieldRule;
@@ -17,6 +18,7 @@ import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
 import com.wesleyelliott.kubwa.rule.CheckedRule;
 import com.wesleyelliott.kubwa.rule.ConfirmEmailRule;
 import com.wesleyelliott.kubwa.rule.ConfirmPasswordRule;
+import com.wesleyelliott.kubwa.rule.CreditCardRule;
 import com.wesleyelliott.kubwa.rule.EmailRule;
 import com.wesleyelliott.kubwa.rule.MaxRule;
 import com.wesleyelliott.kubwa.rule.MinRule;
@@ -109,6 +111,16 @@ public class CodeGenerator {
             } else if (Utils.isRuleType(fieldRuleType, RangeRule.class)) {
                 RangeFieldRule rangeFieldRule = (RangeFieldRule) fieldRule;
                 builder.addStatement(rangeFieldRule.getFieldName() + " = new $T(context, $L, new $T($L, $L, $L))", Validation.class, rangeFieldRule.fieldErrorResource, rangeFieldRule.fieldRuleType, rangeFieldRule.minValue, rangeFieldRule.maxValue, rangeFieldRule.includeBounds);
+            } else if (Utils.isRuleType(fieldRuleType, CreditCardRule.class)) {
+                CreditCardFieldRule creditCardRule = (CreditCardFieldRule) fieldRule;
+                StringBuilder ccBuilder = new StringBuilder();
+                for (CreditCardRule.Type type : creditCardRule.creditCardTypes) {
+                    ccBuilder.append("CreditCardRule.Type.");
+                    ccBuilder.append(type);
+                    ccBuilder.append(",");
+                }
+                ccBuilder.replace(ccBuilder.length()-1, ccBuilder.length(), "");
+                builder.addStatement(creditCardRule.getFieldName() + " = new $T(context, $L, new $T($L))", Validation.class, creditCardRule.fieldErrorResource, creditCardRule.fieldRuleType, ccBuilder.toString());
             } else {
                 builder.addStatement(fieldRule.getFieldName() + " = new $T(context, $L, new $T())", Validation.class, fieldRule.fieldErrorResource, fieldRule.fieldRuleType);
             }
