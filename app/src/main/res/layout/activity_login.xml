@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="viewModel" type="com.wesleyjasonelliott.kubwa.LoginViewModel" />
+        <variable name="viewModel" type="com.wesleyelliott.kubwa.LoginViewModel" />
+        <variable
+            name="spinnerAdapter"
+            type="com.wesleyelliott.kubwa.SpinnerAdapter" />
     </data>
     <LinearLayout
         android:orientation="vertical"
@@ -23,6 +26,18 @@
             app:error="@{viewModel.emailError}"/>
 
         <EditText
+            android:id="@+id/login_confirm_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:hint="@string/confirm_email_hint"
+            android:text="@={viewModel.confirmEmail}"
+            android:maxLines="1"
+            android:inputType="textEmailAddress"
+            app:error="@{viewModel.confirmEmailError}"/>
+
+        <EditText
             android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,6 +48,73 @@
             android:maxLines="1"
             android:inputType="textPassword"
             app:error="@{viewModel.passwordError}"/>
+
+        <EditText
+            android:id="@+id/login_confirm_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/confirm_password_hint"
+            android:text="@={viewModel.confirmPassword}"
+            android:maxLines="1"
+            android:inputType="textPassword"
+            app:error="@{viewModel.confirmPasswordError}"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:checked="@{viewModel.checked}"
+            android:onClick="@{viewModel.onCheckedChanged}"
+            app:error="@{viewModel.checkedError}"/>
+
+        <EditText
+            android:id="@+id/login_min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/min_hint"
+            android:text="@={viewModel.min}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.minError}"/>
+
+        <EditText
+            android:id="@+id/login_max"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/max_hint"
+            android:text="@={viewModel.max}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.maxError}"/>
+
+        <EditText
+            android:id="@+id/login_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="@string/range_hint"
+            android:text="@={viewModel.range}"
+            android:maxLines="1"
+            android:inputType="number"
+            app:error="@{viewModel.rangeError}"/>
+
+        <Spinner
+            android:id="@+id/login_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            app:spinnerError="@{viewModel.spinnerError}"
+            app:adapter="@{spinnerAdapter}"
+            app:selectionChange="@{viewModel.onSelectionChanged}" />
 
         <Button
             android:layout_width="wrap_content"

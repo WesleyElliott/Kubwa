@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER , TYPE})
 public @interface Email {
     int errorMessage();
-    String name();
+    String name() default "emailError";
 
     @Target(TYPE)
     @Retention(RUNTIME)

@@ -1,4 +1,4 @@
-package com.wesleyelliott.kubwa;
+package com.wesleyelliott.kubwa.fieldrule;
 
 import com.wesleyelliott.kubwa.rule.Rule;
 
@@ -9,15 +9,17 @@ import com.wesleyelliott.kubwa.rule.Rule;
 public class FieldRule {
 
     public String fieldName;
-    public Class<? extends Rule> fieldRule;
+    public Class<? extends Rule> fieldRuleType;
     public int fieldErrorResource;
+    public Rule fieldRule;
 
     public String getFieldName() {
         return fieldName + "Validation";
     }
 
     public String getMethodName() {
-        return "validate" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        String validateMethodName = fieldName.replace("Error", "");
+        return "validate" + Character.toUpperCase(validateMethodName.charAt(0)) + validateMethodName.substring(1);
     }
 
     public String getErrorMessageMethodName() {

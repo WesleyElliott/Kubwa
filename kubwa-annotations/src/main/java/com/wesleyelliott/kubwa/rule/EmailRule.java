@@ -7,7 +7,11 @@ import android.util.Patterns;
  * Created by wesley on 2016/07/28.
  */
 
-public class EmailRule extends Rule {
+public class EmailRule extends Rule<String> {
+
+    public EmailRule() {
+        super(String.class);
+    }
 
     @Override
     public boolean isValid(String value) {

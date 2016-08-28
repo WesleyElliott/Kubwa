@@ -6,8 +6,7 @@ package com.wesleyelliott.kubwa.rule;
 
 public class IdNumberRule extends RegexRule {
 
-    @Override
-    protected String getRegex() {
-        return "(\\d){13}";
+    public IdNumberRule() {
+        super("(\\d){13}");
     }
 }

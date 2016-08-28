@@ -2,29 +2,21 @@ package com.wesleyelliott.kubwa;
 
 import android.content.Context;
 
+import com.wesleyelliott.kubwa.rule.ConfirmRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 /**
  * Created by wesley on 2016/07/28.
  */
 
-public class Validation {
+public class Validation<T> {
 
     private Context context;
     private String message = null;
     private int errorMessageId;
-    private Rule rule;
+    private Rule<T> rule;
 
-    public Validation(Context context, int errorMessageId, Rule rule) {
-        this.context = context;
-        this.errorMessageId = errorMessageId;
-        this.rule = rule;
-    }
-
-    public Validation() {
-    }
-
-    public void init(Context context, int errorMessageId, Rule rule) {
+    public Validation(Context context, int errorMessageId, Rule<T> rule) {
         this.context = context;
         this.errorMessageId = errorMessageId;
         this.rule = rule;
@@ -38,8 +30,17 @@ public class Validation {
         this.message = message;
     }
 
-    public void validate(String value) {
+    public void validate(T value) {
         if (!rule.isValid(value)) {
+            message = errorMessageId != -1 ? context.getString(errorMessageId) : "Error";
+        } else {
+            message = null;
+        }
+    }
+
+    public void validate(T value, T value2) {
+        ConfirmRule confirmRule = (ConfirmRule) rule;
+        if (!confirmRule.isValid(value, value2)) {
             message = errorMessageId != -1 ? context.getString(errorMessageId) : "Error";
         } else {
             message = null;
