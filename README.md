@@ -99,8 +99,8 @@ android {
 }
 
 dependencies {
-  compile 'com.wesleyelliott:kubwa-annotations:0.0.6'
-  apt 'com.wesleyelliott:kubwa-compiler:0.0.6'
+  compile 'com.wesleyelliott:kubwa-annotations:1.0.0'
+  apt 'com.wesleyelliott:kubwa-compiler:1.0.0'
 }
 ```
 ## License
