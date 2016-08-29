@@ -76,9 +76,7 @@ Your project level gradle config (`build.gradle`) needs to have the `android-apt
 buildscript {
   repositories {
     mavenCentral()
-    maven {
-            url  "http://dl.bintray.com/wesleyjasonelliott/maven"
-        }
+    jcenter()
    }
   dependencies {
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
