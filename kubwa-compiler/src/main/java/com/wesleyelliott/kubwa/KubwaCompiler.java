@@ -61,7 +61,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 @AutoService(Processor.class)
 public class KubwaCompiler extends AbstractProcessor {
 
-    private List<String> processedRules = new ArrayList<>();
+    private Map<String, List<String>> processedRulesMap = new HashMap<>();
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -190,10 +190,21 @@ public class KubwaCompiler extends AbstractProcessor {
 
         // Check we haven't hit a duplicate
         String annotationName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
-        if (processedRules.contains(annotationName)) {
+        String className = typeElement.getSimpleName().toString();
+
+        System.out.println("Class Name: " + className);
+
+        List<String> classProcessedRules = processedRulesMap.get(className);
+        if (classProcessedRules == null) {
+            classProcessedRules = new ArrayList<>();
+        }
+
+        if (classProcessedRules.contains(annotationName)) {
             throw new KubwaException("Duplicate Validation Names found for " + annotation.annotationType().getSimpleName() + " : " + annotationName);
         }
-        processedRules.add(annotationName);
+
+        classProcessedRules.add(annotationName);
+        processedRulesMap.put(className, classProcessedRules);
 
         fieldRule.fieldName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
         fieldRule.fieldErrorResource = (int) annotation.annotationType().getMethod("errorMessage").invoke(annotation);
