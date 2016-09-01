@@ -29,7 +29,7 @@ ext {
     siteUrl = 'https://github.com/WesleyElliott/Kubwa'
     gitUrl = 'https://github.com/WesleyElliott/Kubwa.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'WesleyElliott'
     developerName = 'Wesley Elliott'
