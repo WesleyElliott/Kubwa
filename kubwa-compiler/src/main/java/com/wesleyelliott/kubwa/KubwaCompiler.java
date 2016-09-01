@@ -192,8 +192,6 @@ public class KubwaCompiler extends AbstractProcessor {
         String annotationName = (String) annotation.annotationType().getMethod("name").invoke(annotation);
         String className = typeElement.getSimpleName().toString();
 
-        System.out.println("Class Name: " + className);
-
         List<String> classProcessedRules = processedRulesMap.get(className);
         if (classProcessedRules == null) {
             classProcessedRules = new ArrayList<>();
