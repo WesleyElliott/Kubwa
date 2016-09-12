@@ -1,6 +1,6 @@
 package com.wesleyelliott.kubwa.annotation;
 
-import com.wesleyelliott.kubwa.rule.IdNumberRule;
+import com.wesleyelliott.kubwa.rule.ZAIdNumberRule;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -17,10 +17,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Created by wesley on 2016/07/28.
  */
-@ValidateUsing(IdNumberRule.class)
+@ValidateUsing(ZAIdNumberRule.class)
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER , TYPE})
-public @interface IdNumber {
+public @interface ZAIdNumber {
     int errorMessage();
     String name() default "idNumberError";
 
@@ -28,6 +28,6 @@ public @interface IdNumber {
     @Retention(RUNTIME)
     @Documented
     public @interface List {
-        IdNumber[] value();
+        ZAIdNumber[] value();
     }
 }
