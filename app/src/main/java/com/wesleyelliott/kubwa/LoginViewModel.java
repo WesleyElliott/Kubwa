@@ -13,6 +13,7 @@ import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
+import com.wesleyelliott.kubwa.annotation.ZAIdNumber;
 import com.wesleyelliott.kubwa.annotation.Max;
 import com.wesleyelliott.kubwa.annotation.Min;
 import com.wesleyelliott.kubwa.annotation.Password;
@@ -28,6 +29,7 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @ConfirmEmail(errorMessage = R.string.confirm_email_error)
 @Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
 @ConfirmPassword(errorMessage = R.string.confirm_password_error)
+@ZAIdNumber(errorMessage = R.string.id_error)
 @Checked(errorMessage = R.string.checked_error)
 @Min(errorMessage = R.string.min_error, value = 10)
 @Max(errorMessage = R.string.max_error, value = 50)
@@ -39,6 +41,7 @@ public class LoginViewModel extends BaseObservable {
     private String confirmEmail;
     private String password;
     private String confirmPassword;
+    private String idNumber;
     private boolean checked;
     private int min;
     private int max;
@@ -87,6 +90,14 @@ public class LoginViewModel extends BaseObservable {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
     }
 
     public boolean isChecked() {
@@ -163,7 +174,16 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private void login() {
-        validator.validateAll(getEmail(), getPassword(), isChecked(), getConfirmEmail(), getConfirmPassword(), min, max, getSpinnerIndex(), range);
+        validator.validateAll(getEmail(),
+                getPassword(),
+                getIdNumber(),
+                isChecked(),
+                getConfirmEmail(),
+                getConfirmPassword(),
+                min, max,
+                getSpinnerIndex(),
+                range);
+
         notifyChange();
 
         if (validator.isValid()) {
@@ -189,6 +209,10 @@ public class LoginViewModel extends BaseObservable {
 
     public String getConfirmPasswordError() {
         return validator.getConfirmPasswordErrorMessage();
+    }
+
+    public String getIdError() {
+        return validator.getIdNumberErrorMessage();
     }
 
     public String getCheckedError() {

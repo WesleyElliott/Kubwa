@@ -106,6 +106,18 @@
             android:inputType="number"
             app:error="@{viewModel.rangeError}"/>
 
+        <EditText
+            android:id="@+id/id_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:hint="@string/id_hint"
+            android:text="@={viewModel.idNumber}"
+            android:maxLines="1"
+            android:inputType="numberSigned"
+            app:error="@{viewModel.idError}"/>
+
         <Spinner
             android:id="@+id/login_spinner"
             android:layout_width="match_parent"
