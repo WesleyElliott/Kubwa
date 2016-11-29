@@ -4,6 +4,8 @@ An Annotation based validation library for use with Android's DataBinding librar
  - Quick and easily add validation rules to ViewModels by annotating the class
  - Annotation Processing to elimate reflection and generate boilerplate validation classes
  
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Kubwa-green.svg?style=true)](https://android-arsenal.com/details/1/4428)
+ 
 ## Usage
 1. Simply annotate your ViewModel class with the validation rules need:
   ```java
