@@ -3,25 +3,25 @@ An Annotation based validation library for use with Android's DataBinding librar
 
  - Quick and easily add validation rules to ViewModels by annotating the class
  - Annotation Processing to elimate reflection and generate boilerplate validation classes
- 
+
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Kubwa-green.svg?style=true)](https://android-arsenal.com/details/1/4428)
- 
+
 ## Usage
 1. Simply annotate your ViewModel class with the validation rules need:
   ```java
   @Email(errorMessage = R.string.email_error)
   @Password(errorMessage = R.string.password_error, scheme = PasswordRule.Scheme.ALPHA_NUMERIC_SYMBOLS)
   public class LoginViewModel extends BaseObservable {
-    
+
     LoginViewModelValidator validator; // Generated when project is built
-    
+
     public LoginViewModel(Context contex) {
       validator = new LoginViewModelValidator(context); // Instantiate the validator with a Context
     }
   }
   ```
   **Note: Each validation rule (`@Email`, `@Password`, etc) requires an `errorMessage` String resource parameter**
-  
+
   *For a list of annotation rules, check out the [Annotations](https://github.com/WesleyElliott/Kubwa/tree/master/kubwa-annotations/src/main/java/com/wesleyelliott/kubwa/annotation)*
 
 2. Make sure your layout and ViewModel are setup for DataBinding
@@ -36,19 +36,19 @@ An Annotation based validation library for use with Android's DataBinding librar
               ...
               android:text="@={viewModel.email}"
               app:error="@{viewModel.emailError}"/>
-  
+
           <EditText
               ...
               android:text="@={viewModel.password}"
               app:error="@{viewModel.passwordError}"/>
   ```
-  
+
   ViewModel:
   ```java
   public String getEmailError() {
       return validator.getEmailErrorMessage();
   }
-  
+
   public String getPasswordError() {
       return validator.getPasswordErrorMessage();
   }
@@ -59,11 +59,11 @@ An Annotation based validation library for use with Android's DataBinding librar
       // Either
       validator.validateEmail(getEmail());
       validator.validatePassword(getPassword());
-      
+
       // Or
       validator.validateAll(getEmail(), getPassword());
       notifyChange();
-  
+
       if (validator.isValid()) {
          // Todo: Log user in
       }
@@ -72,7 +72,7 @@ An Annotation based validation library for use with Android's DataBinding librar
   And thats it! `notifyChange()` will ensure the errors (if any) are shown on the correct EditText's
 
 ## Download
-Your project level gradle config (`build.gradle`) needs to have the `android-apt` plugin setup, as well as the jcenter repository:
+Make sure your project level gradle config (`build.gradle`) has the jcenter repository:
 
 ```gradle
 buildscript {
@@ -80,27 +80,22 @@ buildscript {
     mavenCentral()
     jcenter()
    }
-  dependencies {
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-  }
 }
 ```
 
-Apply the `android-apt` plugin to your module's build file, add the `kubwa-compiler` and `kubwa-annotations` dependancies and make sure Android DataBinding is setup:
+Add the `kubwa-compiler` and `kubwa-annotations` dependancies and make sure Android DataBinding is setup:
 ```gradle
-apply plugin: 'android-apt'
-
 android {
   ...
-  
+
   dataBinding {
         enabled = true
     }
 }
 
 dependencies {
-  compile 'com.wesleyelliott:kubwa-annotations:1.0.1'
-  apt 'com.wesleyelliott:kubwa-compiler:1.0.1'
+  implementation 'com.wesleyelliott:kubwa-annotations:1.1.1'
+  annotationProcessor 'com.wesleyelliott:kubwa-compiler:1.1.1'
 }
 ```
 ## License
