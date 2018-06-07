@@ -95,8 +95,8 @@ android {
 }
 
 dependencies {
-  implementation 'com.wesleyelliott:kubwa-annotations:1.1.2'
-  annotationProcessor 'com.wesleyelliott:kubwa-compiler:1.1.2'
+  implementation 'com.wesleyelliott:kubwa-annotations:1.1.3'
+  annotationProcessor 'com.wesleyelliott:kubwa-compiler:1.1.3'
 }
 ```
 ## License
