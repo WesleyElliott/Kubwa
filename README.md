@@ -2,7 +2,7 @@
 An Annotation based validation library for use with Android's DataBinding library in an MVVM architecture.
 
  - Quick and easily add validation rules to ViewModels by annotating the class
- - Annotation Processing to elimate reflection and generate boilerplate validation classes
+ - Annotation Processing to eliminate reflection and generate boilerplate validation classes
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Kubwa-green.svg?style=true)](https://android-arsenal.com/details/1/4428)
 [![Download](https://api.bintray.com/packages/wesleyjasonelliott/maven/kubwa-compiler/images/download.svg) ](https://bintray.com/wesleyjasonelliott/maven/kubwa-compiler/_latestVersion)
@@ -95,8 +95,8 @@ android {
 }
 
 dependencies {
-  implementation 'com.wesleyelliott:kubwa-annotations:1.1.1'
-  annotationProcessor 'com.wesleyelliott:kubwa-compiler:1.1.1'
+  implementation 'com.wesleyelliott:kubwa-annotations:1.1.2'
+  annotationProcessor 'com.wesleyelliott:kubwa-compiler:1.1.2'
 }
 ```
 ## License
