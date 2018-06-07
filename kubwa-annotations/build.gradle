@@ -1,3 +1,4 @@
+//noinspection GradleDependency
 apply plugin: 'java'
 
 def logger = new com.android.build.gradle.internal.LoggerWrapper(project.logger)
@@ -12,8 +13,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.android:android:2.1.2'
+    compile 'com.google.android:android:4.1.1.4'
 }
 
 ext {
@@ -29,7 +29,7 @@ ext {
     siteUrl = 'https://github.com/WesleyElliott/Kubwa'
     gitUrl = 'https://github.com/WesleyElliott/Kubwa.git'
 
-    libraryVersion = '1.1.0'
+    libraryVersion = '1.1.1'
 
     developerId = 'WesleyElliott'
     developerName = 'Wesley Elliott'
