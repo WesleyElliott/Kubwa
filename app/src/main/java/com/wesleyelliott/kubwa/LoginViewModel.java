@@ -13,6 +13,7 @@ import com.wesleyelliott.kubwa.annotation.Checked;
 import com.wesleyelliott.kubwa.annotation.ConfirmEmail;
 import com.wesleyelliott.kubwa.annotation.ConfirmPassword;
 import com.wesleyelliott.kubwa.annotation.Email;
+import com.wesleyelliott.kubwa.annotation.Regex;
 import com.wesleyelliott.kubwa.annotation.ZAIdNumber;
 import com.wesleyelliott.kubwa.annotation.Max;
 import com.wesleyelliott.kubwa.annotation.Min;
@@ -35,6 +36,7 @@ import com.wesleyelliott.kubwa.rule.PasswordRule;
 @Max(errorMessage = R.string.max_error, value = 50)
 @Range(errorMessage = R.string.range_error, min = 10, max = 20, includeBounds = true)
 @Select(errorMessage = R.string.spinner_error, value = 0)
+@Regex(errorMessage = R.string.app_name, regex = "*")
 public class LoginViewModel extends BaseObservable {
 
     private String email;
@@ -177,6 +179,7 @@ public class LoginViewModel extends BaseObservable {
         validator.validateAll(getEmail(),
                 getPassword(),
                 getIdNumber(),
+                "123",
                 isChecked(),
                 getConfirmEmail(),
                 getConfirmPassword(),
@@ -232,6 +235,10 @@ public class LoginViewModel extends BaseObservable {
     }
 
     public String getRangeError() {
-        return "";
+        return validator.getRangeErrorMessage();
+    }
+
+    public String getRegexError() {
+        return validator.getRegexErrorMessage();
     }
 }

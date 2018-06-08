@@ -31,6 +31,7 @@ import com.wesleyelliott.kubwa.fieldrule.RegexFieldRule;
 import com.wesleyelliott.kubwa.fieldrule.SelectFieldRule;
 import com.wesleyelliott.kubwa.rule.CreditCardRule;
 import com.wesleyelliott.kubwa.rule.PasswordRule;
+import com.wesleyelliott.kubwa.rule.RegexRule;
 import com.wesleyelliott.kubwa.rule.Rule;
 
 import java.io.IOException;
@@ -353,6 +354,12 @@ public class KubwaCompiler extends AbstractProcessor {
                     for (CreditCardRule.Type type : creditCardTypes) {
                         ((CreditCardRule) rule).addCreditCard(type);
                     }
+                } else if (Utils.isAnnotationType(ruleAnnotation.annotationType(), Regex.class)) {
+                    constructor = ruleType.getDeclaredConstructor(String.class);
+                    constructor.setAccessible(true);
+                    String regex = (String) ruleAnnotation.annotationType().getMethod("regex").invoke(ruleAnnotation);
+
+                    rule = (RegexRule) constructor.newInstance(regex);
                 } else {
                     constructor = ruleType.getDeclaredConstructor();
                     constructor.setAccessible(true);
