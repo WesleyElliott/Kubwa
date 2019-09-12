@@ -135,6 +135,7 @@ public class KubwaCompiler extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        System.out.println("Testing");
         Map<TypeElement, AnnotatedClass> annotatedClasses = processTargets(roundEnv);
 
         try {

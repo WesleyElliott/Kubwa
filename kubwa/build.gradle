@@ -1,39 +1,38 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 28
+
+
     defaultConfig {
-        applicationId "com.wesleyelliott.kubwa"
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
-    }
+
 }
 
+group="com.github.WesleyElliott"
+
 dependencies {
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(':kubwa-annotations')
+    kapt project(':kubwa-compiler')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
-
-//    implementation project(':kubwa')
-//    implementation project(':kubwa-annotations')
-//    kapt project(':kubwa-compiler')
-
-    implementation 'com.github.WesleyElliott.Kubwa:kubwa:2.0.0-SNAPSHOT'
-    implementation 'com.github.WesleyElliott.Kubwa:kubwa-annotations:2.0.0-SNAPSHOT'
-    kapt 'com.github.WesleyElliott.Kubwa:kubwa-compiler:2.0.0-SNAPSHOT'
 }

@@ -1,7 +1,7 @@
 package com.wesleyelliott.kubwa;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
