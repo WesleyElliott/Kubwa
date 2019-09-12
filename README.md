@@ -8,7 +8,7 @@ An Annotation based validation library for use with Android's DataBinding librar
 [![Download](https://jitpack.io/v/WesleyElliott/Kubwa.svg)](https://jitpack.io/#WesleyElliott/Kubwa)
 
 ## !Important!
-The new `v2.0.0` has some breaking changes related to Gradle. This library is no longer hosted on jCenter, and is now available via JitPack. Please see [Download][] for more info on using the new version.
+The new `v2.0.0` has some breaking changes related to Gradle. This library is no longer hosted on jCenter, and is now available via JitPack. Please see [Download](https://github.com/WesleyElliott/Kubwa#download) for more info on using the new version.
 Code wise, this release has nothing new - so existing apps looking to target AndroidX can continue to use the library
 
 ## Usage
