@@ -1,6 +1,6 @@
 package com.wesleyelliott.kubwa;
 
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
