@@ -1,5 +1,5 @@
 rootProject.name='Kubwa'
 include ':app'
 include ':kubwa-annotations'
-include ':kubwa-processor'
+include ':kubwa-compiler'
 include ':kubwa'

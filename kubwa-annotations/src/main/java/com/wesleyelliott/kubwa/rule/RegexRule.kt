@@ -1,6 +1,6 @@
 package com.wesleyelliott.kubwa.rule
 
-import android.text.TextUtils
+import com.wesleyelliott.kubwa.Utils
 
 /**
  * Created by wesley on 2016/07/28.
@@ -9,6 +9,6 @@ import android.text.TextUtils
 open class RegexRule(protected val regex: String) : Rule<String>(String::class.java) {
 
     override fun isValid(value: String?): Boolean {
-        return value != null && !TextUtils.isEmpty(value) && value.matches(regex.toRegex())
+        return value != null && !Utils.isEmpty(value) && value.matches(regex.toRegex())
     }
 }

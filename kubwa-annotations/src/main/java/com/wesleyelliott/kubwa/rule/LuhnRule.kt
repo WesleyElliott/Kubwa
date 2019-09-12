@@ -1,6 +1,6 @@
 package com.wesleyelliott.kubwa.rule
 
-import android.text.TextUtils
+import com.wesleyelliott.kubwa.Utils
 
 /**
  * Created by wesley on 2016/08/04.
@@ -11,7 +11,7 @@ abstract class LuhnRule(private val modulus: Int) : Rule<String>(String::class.j
     @JvmOverloads
     fun validate(value: String, regex: String = ".+", includesCheckDigit: Boolean = true): Boolean {
         // Validate Regex
-        if (TextUtils.isEmpty(value) || !value.matches(regex.toRegex())) {
+        if (Utils.isEmpty(value) || !value.matches(regex.toRegex())) {
             return false
         }
 

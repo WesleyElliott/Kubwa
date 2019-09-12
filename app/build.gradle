@@ -30,6 +30,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.1.0'
 
     implementation project(':kubwa')
-    implementation project(path: ':kubwa-annotations', configuration: 'default')
-    kapt 'com.wesleyelliott:kubwa-compiler:1.2.0'
+    implementation project(':kubwa-annotations')
+    kapt project(':kubwa-compiler')
 }
