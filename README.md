@@ -102,7 +102,7 @@ dependencies {
   implementation 'com.github.WesleyElliott.Kubwa:kubwa:v2.0.0'
   implementation 'com.github.WesleyElliott.Kubwa:kubwa-annotations:v2.0.0'
   annotationProcessor 'com.github.WesleyElliott.Kubwa:kubwa-compiler:v2.0.0'
-  # Or if you're using Kotlin, kapt:
+  // Or if you're using Kotlin, kapt:
   kapt 'com.github.WesleyElliott.Kubwa:kubwa-compiler:v2.0.0'
 }
 ```
