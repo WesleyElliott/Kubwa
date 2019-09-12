@@ -33,7 +33,7 @@ dependencies {
 //    implementation project(':kubwa-annotations')
 //    kapt project(':kubwa-compiler')
 
-    implementation 'com.github.WesleyElliott.Kubwa:kubwa:2.0.0-SNAPSHOT'
-    implementation 'com.github.WesleyElliott.Kubwa:kubwa-annotations:2.0.0-SNAPSHOT'
-    kapt 'com.github.WesleyElliott.Kubwa:kubwa-compiler:2.0.0-SNAPSHOT'
+    implementation 'com.github.WesleyElliott.Kubwa:kubwa:2.0.0'
+    implementation 'com.github.WesleyElliott.Kubwa:kubwa-annotations:2.0.0'
+    kapt 'com.github.WesleyElliott.Kubwa:kubwa-compiler:2.0.0'
 }
